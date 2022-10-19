@@ -12,14 +12,12 @@ import {
     BookletHomeIconCont,
     BookletHeadingTextInput,
     BookletHomeIconContBTN,
-    StudentBookletHeading
+    StudentBookletHeading,
 } from '../../components/styles';
 import Utils from '../../utils/utils';
 import { questions } from '../teacher/CreateNewBookletPage';
 var duedate = null;
 const DemoBooklet = (props) => {
-
-
     React.useEffect(() => {
         const questionInfo = Utils.currentQuestion;
         console.log('useEffect --Utils.currentQuestion:', Utils.currentQuestion);
@@ -47,9 +45,7 @@ const DemoBooklet = (props) => {
                     </BookletHomeIconContBTN>
                 </BookletHomeIconCont>
 
-                <StudentBookletHeading>
-                    Sample Text
-                </StudentBookletHeading>
+                <StudentBookletHeading>Sample Text</StudentBookletHeading>
             </BookletHomeBar>
             <BookletMainBar>
                 <ScrollablePane>
@@ -69,4 +65,4 @@ const DemoBooklet = (props) => {
     );
 };
 
-export default  DemoBooklet;
+export default DemoBooklet;

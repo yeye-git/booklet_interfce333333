@@ -122,10 +122,10 @@ export default function App() {
                 home={(props) => {
                     return (
                         <Teacher_student_HomePage
-                        {...props}
+                            {...props}
                             navigation={navigation}
                             role={useStore((state) => state.roleVariable)}
-                        ></Teacher_student_HomePage>  
+                        ></Teacher_student_HomePage>
                     );
                 }}
                 // home={
@@ -149,8 +149,8 @@ export default function App() {
         return <Login navigation={navigation} setRoleVariable={setRoleVariable} set_UserName={set_UserName}></Login>;
     };
 
-    const CreateNewBooklet = ({ navigation }) => {
-        return <CreateNewBookletPage navigation={navigation}></CreateNewBookletPage>;
+    const CreateNewBooklet = ({ navigation, route }) => {
+        return <CreateNewBookletPage navigation={navigation} route={route}></CreateNewBookletPage>;
     };
 
     const Class = ({ navigation }) => {

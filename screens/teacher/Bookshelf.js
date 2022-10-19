@@ -141,9 +141,7 @@ export const BookshelfT = ({ navigation }) => {
                     <BSButtonSubText>Completed Booklets</BSButtonSubText>
                 </BSTitleBarCont>
                 <CompletedBookletsScroll>
-                     <HorizontalCont>
-                        {isinFocus()}
-                    </HorizontalCont>
+                    <HorizontalCont>{isinFocus()}</HorizontalCont>
                     {/*<HorizontalCont>
                         {isinFocus}
                         {questionAnswerInfo.complete &&
@@ -188,7 +186,7 @@ export const BookshelfT = ({ navigation }) => {
                     */}
                     {createBooklet(navigation)}
 
-                  {isinFocus2()}
+                    {isinFocus2()}
                 </HorizontalCont>
             </CompletedBooklets>
         </BookshelfContPane>
@@ -282,9 +280,7 @@ export const BookshelfS = ({ navigation }) => {
                     <BSButtonSubText>Completed Booklets</BSButtonSubText>
                 </BSTitleBarCont>
                 <CompletedBookletsScroll>
-                    <HorizontalCont>
-                        {isinFocus()}
-                    </HorizontalCont>
+                    <HorizontalCont>{isinFocus()}</HorizontalCont>
                 </CompletedBookletsScroll>
                 <BookshelfBorder />
                 <BSTitleBarCont>
@@ -346,7 +342,7 @@ function createBooklet(navigation) {
     const handleNewBooklet = (response) => {
         Utils.currentQuestion = null;
         Utils.questionId = null;
-        navigation.push('CreateNewBookletPage', { a: 1 });
+        navigation.push('CreateNewBookletPage');
     };
     return (
         <BSIconCont>
@@ -365,7 +361,7 @@ function demoBooklet(navigation) {
     };
     return (
         <BSIconCont>
-            <BookshelfIcon onPress= {demo}>
+            <BookshelfIcon onPress={demo}>
                 <BookshelfImage source={require('../../assets/inProgress.png')} />
             </BookshelfIcon>
             <BSButtonSubText>Demo Book</BSButtonSubText>
