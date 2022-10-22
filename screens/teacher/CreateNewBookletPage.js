@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { View, Alert, Text, Keyboard, TouchableWithoutFeedback, DeviceEventEmitter } from 'react-native';
+import Swipeout from 'react-native-swipeout';
 import {
     DeleteModal,
     DueDateModal,
@@ -36,7 +37,6 @@ import {
     BookletHomeIconCont,
     BookletSideBar,
     ModalStyle,
-    BookletModal,
     CenterModalView,
     ContentModalButtonCont,
     ModalButtonCont,
@@ -53,6 +53,9 @@ import {
     BookshelfContPane,
     DateSub,
 } from '../../components/styles';
+import { BookletModalWrap } from '../../components/BookletModalWrap';
+import { SingleQuestion } from '../../components/BookletModalContent';
+import { QuestionCard } from '../../components/QuestionCard';
 import { publishBooklet, saveBooklet } from './Bookshelf';
 import Utils from '../../utils/utils';
 import {
@@ -75,11 +78,9 @@ const CreateNewBookletPage = (props) => {
     const [currentModal, setCurrentModal] = useState();
 
     // 单选弹窗Input change事件
-    const [questionAnswer, setQuestionAnswer] = useState({});
-    console.log('🚀 ~ file: CreateNewBookletPage.js ~ line 80 ~ CreateNewBookletPage ~ questionAnswer', questionAnswer);
+    const [selectedQuestionValue, setSelectedQuestionValue] = useState({});
 
     const [questionList, setQuestionList] = useState([]);
-    console.log('🚀 ~ file: CreateNewBookletPage.js ~ line 83 ~ CreateNewBookletPage ~ questionList', questionList);
     const [currentDueDate, setCurrentDueDate] = useState();
     const [isActive, setIsActive] = useState(false);
 
@@ -87,7 +88,7 @@ const CreateNewBookletPage = (props) => {
         {
             key: 1,
             icon: require('./../../assets/icons/text.png'),
-            modal: <SRModal onChange={setQuestionAnswer} />,
+            modal: <SingleQuestion value={selectedQuestionValue} onChange={setSelectedQuestionValue} />,
         },
         {
             key: 2,
@@ -240,8 +241,8 @@ const CreateNewBookletPage = (props) => {
                 nextQuestionList.push({
                     type: 'single',
                     key: nextQuestionList.length + 1,
-                    question: questionAnswer.question,
-                    answer: questionAnswer.answer,
+                    question: selectedQuestionValue.question,
+                    answer: selectedQuestionValue.answer,
                 });
                 setQuestionList([...nextQuestionList]);
                 handleModalCancel();
@@ -305,25 +306,16 @@ const CreateNewBookletPage = (props) => {
 
     return (
         <BookletContentPane>
-            <BookletModal visible={modalOpen} animationType="slide" transparent={true}>
-                <CenterModalView>
-                    <ContentModalButtonCont>{currentModal}</ContentModalButtonCont>
-                    <ModalButtonCont>
-                        <ModalButtons onPress={handleModalConfirm}>
-                            <ModalButtonText>Ok</ModalButtonText>
-                        </ModalButtons>
-                        <ModalButtons
-                            onPress={() => {
-                                setModalOpen(false);
-                                setCurrentTab(0);
-                            }}
-                        >
-                            <ModalButtonText onPress={handleModalCancel}>Cancel</ModalButtonText>
-                        </ModalButtons>
-                    </ModalButtonCont>
-                </CenterModalView>
-            </BookletModal>
-            <BookletPaddingBar></BookletPaddingBar>
+            <BookletModalWrap
+                open={modalOpen}
+                animationType="slide"
+                transparent={true}
+                onOk={handleModalConfirm}
+                onCancel={handleModalCancel}
+            >
+                {tabs[0].modal}
+            </BookletModalWrap>
+            <BookletPaddingBar />
             <BookletHomeBar>
                 <BookletHomeIconCont>
                     <BookletHomeIconContBTN onPress={handleToHomePage}>
@@ -351,22 +343,37 @@ const CreateNewBookletPage = (props) => {
                         </SBButtonCont>
                     ))}
                 </BookletIconBar>
-                <ScrollablePane>
+                <ScrollablePane style={{ padding: 10 }}>
                     <DateContentPane>
                         <DateSub>Due: {currentDueDate}</DateSub>
                     </DateContentPane>
                     {questionList.map((item, index) => (
-                        <QuestionContentPane
-                            style={{ backgroundColor: isActive ? '#a88df2' : '#CBBBF7' }}
-                            key={item.key}
-                            activeOpacity={0.5}
-                            onLongPress={() => {
-                                // selected = listkey;
-                                setIsActive(!isActive);
-                            }}
+                        // <QuestionContentPane
+                        //     style={{ backgroundColor: isActive ? '#a88df2' : '#CBBBF7' }}
+                        //     key={item.key}
+                        //     activeOpacity={0.5}
+                        //     onLongPress={() => {
+                        //         // selected = listkey;
+                        //         setIsActive(!isActive);
+                        //     }}
+                        // >
+                        //     {renderQuestion(item)}
+                        // </QuestionContentPane>
+                        <Swipeout
+                            backgroundColor="#fff"
+                            right={[
+                                {
+                                    text: 'Delete',
+                                    type: 'delete',
+                                },
+                                {
+                                    text: '编辑',
+                                    type: 'secondary',
+                                },
+                            ]}
                         >
-                            {renderQuestion(item)}
-                        </QuestionContentPane>
+                            <QuestionCard />
+                        </Swipeout>
                     ))}
                 </ScrollablePane>
             </BookletMainBar>

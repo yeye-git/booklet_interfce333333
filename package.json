@@ -54,6 +54,7 @@
     "react-native-screens": "~3.11.1",
     "react-native-shadow": "^1.2.2",
     "react-native-svg": "^13.1.0",
+    "react-native-swipeout": "^2.3.6",
     "react-native-tab-navigator": "^0.3.4",
     "react-native-tags": "^2.2.1",
     "react-native-vector-icons": "^9.2.0",
