@@ -1,15 +1,19 @@
-import request from '../../utils/request';
+import { Alert } from 'react-native';
+import request from '~/utils/request';
 import { baseUrl } from '../config/index';
 
 export const login = async (data) => {
-    const response = await request({
-        url: `/api/login`,
+    const [response] = await request({
+        url: '/login',
         method: 'POST',
         data,
     });
 
     if (response.code === 200) {
-        return response.data;
+        return true;
+    } else {
+        Alert.alert(response.message || '');
+        return false;
     }
 };
 

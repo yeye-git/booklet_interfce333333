@@ -18,9 +18,7 @@ import {
     StyledTextInput,
 } from '../components/styles';
 
-export default function Login({ navigation, setRoleVariable, set_UserName }) {
-    console.log(navigation, 'navigation,inc', setRoleVariable);
-
+export default function Login({ navigation }) {
     const [text, setText] = React.useState('');
     const [isVisible, setIsVisible] = React.useState(false);
     const [textBtn, setTextBtn] = React.useState('continue');
@@ -123,28 +121,6 @@ export default function Login({ navigation, setRoleVariable, set_UserName }) {
         },
     });
 
-    // 1: when new user login or register into this app,
-    //then back end token recognize user information to login different pages.
-    const [count, setCount] = useState(0);
-    // const ?push = navigation
-
-    // React.useLayoutEffect(() => {
-    //   navigation.setOptions({
-    //     headerRight: () => (
-    //       <Button onPress={() => setCount((c) => c + 1)} title="Update count" />
-    //     ),
-    //   })
-    // }, [navigation, setCount])
-
-    // const pushHome = () => {
-    //   console.log("1123123123")
-    //   navigation.push("HomeName", { name: "xaiohei" })
-    // }
-
-    const goPassword = () => {
-        console.log('1123123123');
-        navigation.push('ForgotPasswordName', { name: '123' });
-    };
     const [value, setValue] = useState('');
     const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
     const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -156,13 +132,7 @@ export default function Login({ navigation, setRoleVariable, set_UserName }) {
     return (
         <View>
             {/** TODO redundance code, It can be optimized */}
-            <LoginPage
-                c_setIsVisible={setIsVisible}
-                c_setTextBtn={setTextBtn}
-                setRoleVariable={setRoleVariable}
-                navigation={navigation}
-                set_UserName={set_UserName}
-            />
+            <LoginPage c_setIsVisible={setIsVisible} c_setTextBtn={setTextBtn} navigation={navigation} />
             {/* <SafeAreaProvider> */}
             {/* <Button title="Open Bottom Sheet" onPress={() => setIsVisible(true)}  /> */}
             <BottomSheet modalProps={{}} isVisible={isVisible}>

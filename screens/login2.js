@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Text, Alert, View, Image, TextInput } from 'react-native';
+import { Alert } from 'react-native';
 import {
     BottomButtons,
     BottomButtonText,
@@ -14,129 +14,40 @@ import {
     LoginPageView,
 } from '../components/styles';
 import loginBg from '../assets/login-bg.png';
+import useStore from '~/common-file/store';
+import { login } from '~/common-file/apis';
 
-import baseUrl from '../common-file/config';
-import Utils from '../utils/utils';
-
-const LoginPage = ({ navigation, setRoleVariable, set_UserName, c_setIsVisible, c_setTextBtn }) => {
+const LoginPage = ({ navigation, c_setIsVisible, c_setTextBtn }) => {
     const [email, onChangeNumber] = React.useState('');
     const [pw, onChangeNumber2] = React.useState('');
-    const eamilRef = useRef(null);
-    const pushHome = () => {
-        console.log('1123123123');
-        navigation.push('HomeName', { name: 'xaiohei' });
-    };
+    const setUser = useStore((state) => state.setUser);
 
-    const handleLogin = async (val) => {
-        // TODO
-        // console.log(email, pw, val, 'flag111');
-
+    const handleLogin = async (type) => {
         if (!email || !pw) {
             Alert.alert('Please enter your Email or Password!');
             return;
         }
 
-        // switch (val) {
-        //     case 0:
-        //         console.log('111122');
-        //         break;
-        //     case 1:
-        //         console.log('2233');
-        //         break;
-        // }
+        const params = {
+            role: Number(type),
+            email,
+            password: pw,
+        };
 
-        switch (val) {
-            case 0:
-                //TODO these code base on back end document.
-                //TODO request URL need to Linux, local URL request fail.
-                // logic of student
-                const LoginparamsS = { email, password: pw, role: 0 };
-                console.log(email, pw, val, 'flag222');
+        const result = await login(params);
+        if (result) {
+            setUser({
+                description: '123213',
+                label: 'asdsa',
+                role: Number(type) === 1 ? 'roleTeacher' : 'roleStudent',
+            });
 
-                let responseS = await fetch(`${baseUrl}/login`, {
-                    method: 'POST', // ，GET/POST/PUT/DELETE
-                    mode: 'cors', // ，no-cors/*cors/same-origin
-                    cache: 'no-cache', // ，*default/no-cache/reload/force-cache/only-if-cached
-                    credentials: 'same-origin', // cookie，*same-origin/include/omit
-                    headers: {
-                        'Content-Type': 'application/json', // body，'application/x-www-form-urlencoded'
-                    },
-                    redirect: 'follow', // redirect，*follow/manual/error
-                    referrer: 'no-referrer', // ，no-referrer, *client
-                    body: JSON.stringify(LoginparamsS),
-                });
+            Alert.alert('Login Successful');
 
-                // console.log('111', response);
-
-                let responseJsonS = await responseS.json();
-
-                if (responseJsonS[0].status === 'SUCCESS') {
-                    set_UserName(email);
-
-                    Alert.alert('Login Successful');
-
-                    setRoleVariable('roleStudent');
-
-                    setTimeout(() => {
-                        navigation.push('HomeName', { name: 'Student.li' });
-                    }, 1000);
-                    return;
-                } else {
-                    Alert.alert(responseJsonS[0].message);
-                    return;
-                }
-
-                // ! example:  go to home page
-
-                // navigation.push('HomeName', { name: 'Student.li' });
-                break;
-            case 1:
-                //TODO these code base on back end document.
-                //TODO request URL need to Linux, local URL request fail.
-                //logic of teacher
-                const LoginparamsT = { email, password: pw, role: 1 };
-                console.log(LoginparamsT, `${baseUrl}/login`);
-
-                let responseT = await fetch(`${baseUrl}/login`, {
-                    method: 'POST', // ，GET/POST/PUT/DELETE
-                    mode: 'cors', // ，no-cors/*cors/same-origin
-                    cache: 'no-cache', // ，*default/no-cache/reload/force-cache/only-if-cached
-                    credentials: 'same-origin', // cookie，*same-origin/include/omit
-                    headers: {
-                        'Content-Type': 'application/json', // body，'application/x-www-form-urlencoded'
-                    },
-                    redirect: 'follow', // redirect，*follow/manual/error
-                    referrer: 'no-referrer', // ，no-referrer, *client
-                    body: JSON.stringify(LoginparamsT),
-                });
-
-                let responseJsonT = await responseT.json();
-
-                console.log(responseJsonT, '---', responseJsonT[0].status);
-
-                if (responseJsonT[0].status === 'SUCCESS') {
-                    const { userId } = responseJsonT[0];
-                    Utils.userId = userId
-                    console.log('-----1-------------', Utils.userId);
-                    set_UserName(email);
-                    Alert.alert('Login Successful');
-                    setRoleVariable('roleTeacher');
-                   
-                    setTimeout(() => {
-                        navigation.push('HomeName', { name: 'Teacher.li' });
-                    }, 1000);
-                    return;
-                } else {
-                    Alert.alert(responseJsonT[0].message);
-                    return;
-                }
-
-                // ! example:  go to home page
-                break;
-            default:
-                console.log('select error');
+            setTimeout(() => {
+                navigation.push('HomeName', { name: Number(type) === 1 ? 'Teacher.li' : 'Student.li' });
+            }, 1000);
         }
-
         // console.log(123, navigation);
     };
 
@@ -152,8 +63,6 @@ const LoginPage = ({ navigation, setRoleVariable, set_UserName, c_setIsVisible, 
         c_setIsVisible(true);
         c_setTextBtn('continue');
     };
-
-    const [value, onChangeText] = React.useState('Useless Placeholder');
 
     return (
         <LoginPageView>

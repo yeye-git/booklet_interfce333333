@@ -106,17 +106,42 @@ export default function App() {
                 home={(props) => {
                     return <Teacher_student_HomePage {...props} navigation={navigation} />;
                 }}
+                // home={
+                //     <Teacher_student_HomePage
+                //         navigation={navigation}
+                //         role={useStore((state) => state.roleVariable)}
+                //     ></Teacher_student_HomePage>
+                // }
                 message={<MessageBar></MessageBar>}
                 profile={<ProfileBar navigation={navigation}></ProfileBar>}
             ></CommonBar>
         );
     };
 
+    const LoginPage = ({ navigation }) => {
+        // change roleVariable in zustand
+        //inc={inc}
+        return <Login navigation={navigation} setRoleVariable={setRoleVariable} set_UserName={set_UserName}></Login>;
+    };
+
+    const CreateNewBooklet = ({ navigation, route }) => {
+        return <CreateNewBookletPage navigation={navigation} route={route}></CreateNewBookletPage>;
+    };
+
+    const Class = ({ navigation }) => {
+        return <ClassFrame navigation={navigation}></ClassFrame>;
+    };
+
+    const StudentDemo = ({ navigation }) => {
+        return <DemoBooklet navigation={navigation}></DemoBooklet>;
+    };
+
     // main func return
     return (
         <NavigationContainer>
+            {/*<Text> headerShown:false</Text>*/}
             <Stack.Navigator screenOptions={{ headerMode: false }}>
-                <Stack.Screen name="LoginName" component={Login} />
+                <Stack.Screen name="LoginName" component={LoginPage} />
                 <Stack.Screen
                     name="HomeName"
                     component={NewCommonBar}
@@ -147,7 +172,7 @@ export default function App() {
                 />
                 <Stack.Screen
                     name="CreateNewBookletPage"
-                    component={CreateNewBookletPage}
+                    component={CreateNewBooklet}
                     options={({ navigation, route }) => ({
                         headerTitle: (props) => <Text>CreateNewBookletPage</Text>,
                     })}
@@ -161,14 +186,14 @@ export default function App() {
                 />
                 <Stack.Screen
                     name="Class"
-                    component={ClassFrame}
+                    component={Class}
                     options={({ navigation, route }) => ({
                         headerTitle: (props) => <Text>Class</Text>,
                     })}
                 />
                 <Stack.Screen
                     name="StudentDemo"
-                    component={DemoBooklet}
+                    component={StudentDemo}
                     options={({ navigation, route }) => ({
                         headerTitle: (props) => <Text>StudentDemo</Text>,
                     })}
