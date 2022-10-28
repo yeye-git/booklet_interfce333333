@@ -29,6 +29,24 @@ export const SingleQuestion = ({ value = {}, onChange }) => {
     );
 };
 
+export const MultiSelectQuestion = ({ options = [] }) => {
+    return (
+        <View style={styles.wrapper}>
+            <Text style={styles.title}>Multiple Choice</Text>
+            <Text style={styles.headText}>Question:</Text>
+            <AutoGrowingTextInput
+                // editable={false}
+                style={styles.input}
+                placeholder={'Enter Your Answer'}
+                placeholderTextColor={'black'}
+                keyboardType={'default'}
+                value={question}
+                onChange={(t) => onChange({ ...value, question: t })}
+            />
+        </View>
+    );
+};
+
 const styles = StyleSheet.create({
     wrapper: {
         width: '100%',

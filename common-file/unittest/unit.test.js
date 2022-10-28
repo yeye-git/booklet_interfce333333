@@ -1,5 +1,5 @@
 import CreatNewBookletPage, { noofques } from '../../screens/teacher/CreateNewBookletPage';
-import { questions } from '../../screens/teacher/CreateNewBookletPage';
+import { questions } from '../../screens/teacher/CreateNewBookletPage copy1';
 import { sum } from './sum';
 import React from 'react';
 import renderer from 'react-test-renderer';

@@ -62,13 +62,11 @@ export default function Login({ navigation, setRoleVariable, set_UserName }) {
                 Alert.alert(responseJsonT[0].message);
                 return;
             }
-
         } else if (pageState === 2) {
             setPageState(3);
             setTextBtn('Reset password');
-        } else if(pageState=== 3 ){
-
-            const LoginparamsT = { email, password:password,code:'1234'};
+        } else if (pageState === 3) {
+            const LoginparamsT = { email, password: password, code: '1234' };
             console.log('0000', LoginparamsT, `${baseUrl}/forgetPw`);
 
             let responseT = await fetch(`${baseUrl}/forgetPw`, {
@@ -91,16 +89,12 @@ export default function Login({ navigation, setRoleVariable, set_UserName }) {
             if (responseJsonT[0].code == '200') {
                 // set_UserName(email);
                 Alert.alert('password reset success');
-                setIsVisible(false)
+                setIsVisible(false);
                 return;
             } else {
                 Alert.alert(responseJsonT[0].message);
                 return;
             }
-
-
-
-
         }
     };
     const styles = StyleSheet.create({
@@ -203,12 +197,15 @@ export default function Login({ navigation, setRoleVariable, set_UserName }) {
                                     placeholder="Gmail"
                                     secureTextEntry={!showEmailText}
                                     onChangeText={(text) => onChangeNumber(text)}
-                                    value={email} />
+                                    value={email}
+                                />
                                 <MaterialIcons
-                                    name={showEmailText ? "visibility-off" : "visibility"}
-                                    size={24} color="#454545"
-                                    style={{position: 'absolute', right: 15, top: 12}}
-                                    onPress={() => setShowEmailText(!showEmailText)} />
+                                    name={showEmailText ? 'visibility-off' : 'visibility'}
+                                    size={24}
+                                    color="#454545"
+                                    style={{ position: 'absolute', right: 15, top: 12 }}
+                                    onPress={() => setShowEmailText(!showEmailText)}
+                                />
                             </CustomTextInputWrapper>
                         </View>
                     )}
@@ -281,24 +278,27 @@ export default function Login({ navigation, setRoleVariable, set_UserName }) {
                                     placeholder="Password"
                                     secureTextEntry={!showPasswordText}
                                     onChangeText={(text) => onChangeNumberpd(text)}
-                                    value={password} />
+                                    value={password}
+                                />
                                 <MaterialIcons
-                                    name={showPasswordText ? "visibility-off" : "visibility"}
-                                    size={24} color="#454545"
-                                    style={{position: 'absolute', right: 15, top: 15}}
-                                    onPress={() => setShowPasswordText(!showPasswordText)} />
+                                    name={showPasswordText ? 'visibility-off' : 'visibility'}
+                                    size={24}
+                                    color="#454545"
+                                    style={{ position: 'absolute', right: 15, top: 15 }}
+                                    onPress={() => setShowPasswordText(!showPasswordText)}
+                                />
                             </CustomTextInputWrapper>
                             <Text style={{ paddingBottom: 20, paddingTop: 20 }}>Password</Text>
                             {/*<TextInput label="Password" secureTextEntry right={<TextInput.Icon icon="eye" />} />*/}
                             <CustomTextInputWrapper>
-                                <CustomTextInput
-                                    placeholder="Password"
-                                    secureTextEntry={!showConfirmPasswordText} />
+                                <CustomTextInput placeholder="Password" secureTextEntry={!showConfirmPasswordText} />
                                 <MaterialIcons
-                                    name={showConfirmPasswordText ? "visibility-off" : "visibility"}
-                                    size={24} color="#454545"
-                                    style={{position: 'absolute', right: 15, top: 15}}
-                                    onPress={() => setShowConfirmPasswordText(!showConfirmPasswordText)} />
+                                    name={showConfirmPasswordText ? 'visibility-off' : 'visibility'}
+                                    size={24}
+                                    color="#454545"
+                                    style={{ position: 'absolute', right: 15, top: 15 }}
+                                    onPress={() => setShowConfirmPasswordText(!showConfirmPasswordText)}
+                                />
                             </CustomTextInputWrapper>
                         </View>
                     )}

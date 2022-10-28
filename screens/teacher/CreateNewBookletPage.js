@@ -54,7 +54,7 @@ import {
     DateSub,
 } from '../../components/styles';
 import { BookletModalWrap } from '../../components/BookletModalWrap';
-import { SingleQuestion } from '../../components/BookletModalContent';
+import { SingleQuestion, MultiSelectQuestion } from '../../components/BookletModalContent';
 import { QuestionCard } from '../../components/QuestionCard';
 import { publishBooklet, saveBooklet } from './Bookshelf';
 import Utils from '../../utils/utils';
@@ -93,32 +93,32 @@ const CreateNewBookletPage = (props) => {
         {
             key: 2,
             icon: require('./../../assets/icons/48px/Outline/Interface/Layout.png'),
-            modal: MCModal(),
+            modal: <MultiSelectQuestion />,
         },
         {
             key: 3,
             icon: require('./../../assets/icons/48px/Outline/Devices/Camera.png'),
-            modal: IMGModal(),
+            modal: <MultiSelectQuestion />,
         },
         {
             key: 4,
             icon: require('./../../assets/icons/48px/Outline/Interface/History.png'),
-            modal: DueDateModal(),
+            // modal: DueDateModal(),
         },
         {
             key: 5,
             icon: require('./../../assets/icons/48px/Outline/Interface/Trash.png'),
-            modal: DeleteModal(),
+            // modal: DeleteModal(),
         },
         {
             key: 6,
             icon: require('./../../assets/icons/48px/Outline/Interface/Save.png'),
-            modal: SaveModal(),
+            // modal: SaveModal(),
         },
         {
             key: 7,
             icon: require('./../../assets/icons/48px/Outline/Files/Upload.png'),
-            modal: <PublishModal onChange={handlePublishValue} />,
+            // modal: <PublishModal onChange={handlePublishValue} />,
         },
     ];
 
@@ -147,9 +147,12 @@ const CreateNewBookletPage = (props) => {
     };
 
     const handleTabPress = (item) => {
+        console.log('🚀 ~ file: CreateNewBookletPage.js ~ line 150 ~ handleTabPress ~ item', item);
         setCurrentTab(item.key);
-        setCurrentModal(item.modal);
-        setModalOpen(true);
+        if (item.modal) {
+            setCurrentModal(item.modal);
+            setModalOpen(true);
+        }
     };
 
     const validateDueDate = (date) => {
@@ -313,7 +316,7 @@ const CreateNewBookletPage = (props) => {
                 onOk={handleModalConfirm}
                 onCancel={handleModalCancel}
             >
-                {tabs[0].modal}
+                {currentModal}
             </BookletModalWrap>
             <BookletPaddingBar />
             <BookletHomeBar>
@@ -344,9 +347,11 @@ const CreateNewBookletPage = (props) => {
                     ))}
                 </BookletIconBar>
                 <ScrollablePane style={{ padding: 10 }}>
-                    <DateContentPane>
-                        <DateSub>Due: {currentDueDate}</DateSub>
-                    </DateContentPane>
+                    {currentDueDate && (
+                        <DateContentPane>
+                            <DateSub>Due: {currentDueDate}</DateSub>
+                        </DateContentPane>
+                    )}
                     {questionList.map((item, index) => (
                         // <QuestionContentPane
                         //     style={{ backgroundColor: isActive ? '#a88df2' : '#CBBBF7' }}
@@ -367,7 +372,7 @@ const CreateNewBookletPage = (props) => {
                                     type: 'delete',
                                 },
                                 {
-                                    text: '编辑',
+                                    text: 'Edit',
                                     type: 'secondary',
                                 },
                             ]}

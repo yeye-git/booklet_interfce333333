@@ -1,4 +1,17 @@
 import request from '../../utils/request';
+import { baseUrl } from '../config/index';
+
+export const login = async (data) => {
+    const response = await request({
+        url: `/api/login`,
+        method: 'POST',
+        data,
+    });
+
+    if (response.code === 200) {
+        return response.data;
+    }
+};
 
 /**
  * 根据id获取问题详情
