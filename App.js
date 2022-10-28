@@ -116,7 +116,7 @@ export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerMode: false }}>
-                <Stack.Screen name="LoginName" component={Login} />
+                <Stack.Screen name="LoginName" component={CreateNewBookletPage} />
                 <Stack.Screen
                     name="HomeName"
                     component={NewCommonBar}

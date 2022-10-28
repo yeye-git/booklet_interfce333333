@@ -40,6 +40,7 @@ const LoginPage = ({ navigation, c_setIsVisible, c_setTextBtn }) => {
                 description: '123213',
                 label: 'asdsa',
                 role: Number(type) === 1 ? 'roleTeacher' : 'roleStudent',
+                name: 'test',
             });
 
             Alert.alert('Login Successful');

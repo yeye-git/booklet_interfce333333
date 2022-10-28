@@ -63,7 +63,7 @@ import {
     apiSaveTeachQuestion,
     apiDeleteAllQuestion,
     apiUpdateTeachQuestion,
-} from '../../common-file/apis/index';
+} from '~/common-file/apis/index';
 import moment from 'moment';
 import { clearDate, subduedate } from '../../components/growtext';
 export var noofques = 0;
@@ -87,37 +87,37 @@ const CreateNewBookletPage = (props) => {
     const tabs = [
         {
             key: 1,
-            icon: require('./../../assets/icons/text.png'),
+            icon: require('~/assets/icons/text.png'),
             modal: <SingleQuestion value={selectedQuestionValue} onChange={setSelectedQuestionValue} />,
         },
         {
             key: 2,
-            icon: require('./../../assets/icons/48px/Outline/Interface/Layout.png'),
+            icon: require('~/assets/icons/48px/Outline/Interface/Layout.png'),
             modal: <MultiSelectQuestion />,
         },
         {
             key: 3,
-            icon: require('./../../assets/icons/48px/Outline/Devices/Camera.png'),
+            icon: require('~/assets/icons/48px/Outline/Devices/Camera.png'),
             modal: <MultiSelectQuestion />,
         },
         {
             key: 4,
-            icon: require('./../../assets/icons/48px/Outline/Interface/History.png'),
+            icon: require('~/assets/icons/48px/Outline/Interface/History.png'),
             // modal: DueDateModal(),
         },
         {
             key: 5,
-            icon: require('./../../assets/icons/48px/Outline/Interface/Trash.png'),
+            icon: require('~/assets/icons/48px/Outline/Interface/Trash.png'),
             // modal: DeleteModal(),
         },
         {
             key: 6,
-            icon: require('./../../assets/icons/48px/Outline/Interface/Save.png'),
+            icon: require('~/assets/icons/48px/Outline/Interface/Save.png'),
             // modal: SaveModal(),
         },
         {
             key: 7,
-            icon: require('./../../assets/icons/48px/Outline/Files/Upload.png'),
+            icon: require('~/assets/icons/48px/Outline/Files/Upload.png'),
             // modal: <PublishModal onChange={handlePublishValue} />,
         },
     ];
