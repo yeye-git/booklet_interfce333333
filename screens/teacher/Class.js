@@ -1,29 +1,40 @@
-import React from 'react';
-import { Text } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import CommonBar from '../../common-file/NavigationBar';
-import { ClassButtonText, ClassHeadText, ClassRow, ClassSubjects, ClassView, ClassViewHeading, ClassViewSearchBar, ClassViewTopPad, SubjectButtons, TitleView } from '../../components/styles';
+import {
+    ClassButtonText,
+    ClassHeadText,
+    ClassRow,
+    ClassSubjects,
+    ClassView,
+    ClassViewHeading,
+    ClassViewSearchBar,
+    ClassViewTopPad,
+    SubjectButtons,
+    TitleView,
+} from '../../components/styles';
+import { getSubjects } from '~/common-file/apis';
 var headtext = 'Subjects';
 export const ClassFrame = ({ navigation }) => {
-    const layout = [
-        { i: "a", x: 0, y: 0, w: 1, h: 2, static: true },
-        { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
-        { i: "c", x: 4, y: 0, w: 1, h: 2 }
-      ];
-    return(
-        <ClassView>
-            <ClassViewTopPad>
+    useEffect(() => {
+        handleSearchList();
+    }, []);
 
-            </ClassViewTopPad>
+    const handleSearchList = async () => {
+        const result = await getSubjects();
+        console.log('🚀 ~ file: Class.js ~ line 26 ~ handleSearchList ~ result', result);
+    };
+    return (
+        <ClassView>
+            <ClassViewTopPad></ClassViewTopPad>
             <ClassViewHeading>
                 <TitleView>
                     <ClassHeadText>{headtext}</ClassHeadText>
                 </TitleView>
             </ClassViewHeading>
             <ClassViewSearchBar>
-                <Searchbar placeholder='Search'>
-
-                </Searchbar>
+                <Searchbar placeholder="Search"></Searchbar>
             </ClassViewSearchBar>
             <ClassSubjects>
                 <ClassRow>
@@ -69,5 +80,4 @@ export const ClassFrame = ({ navigation }) => {
             </ClassSubjects>
         </ClassView>
     );
-    
 };

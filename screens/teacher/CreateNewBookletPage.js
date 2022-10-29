@@ -2,61 +2,33 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { View, Alert, Text, Keyboard, TouchableWithoutFeedback, DeviceEventEmitter } from 'react-native';
 import Swipeout from 'react-native-swipeout';
-import {
-    DeleteModal,
-    DueDateModal,
-    IMGModal,
-    MCModal,
-    SaveModal,
-    SRModal,
-    PublishModal,
-    storeData,
-    SRQ,
-    SRA,
-    MCQ1,
-    MCA1,
-    MCA2,
-    MCA3,
-    MCA4,
-    ImageQ,
-    ImageA,
-    clearData,
-    MCOption1,
-} from '../../components/modals';
-import { scrollIMG, scrollMC, scrollSR } from '../../components/scrollforms';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {
     BookletContentPane,
     BookletHomeBar,
     BookletIconBar,
     BookletMainBar,
     BookletPaddingBar,
-    QuestionContentPane,
     ScrollablePane,
     SBButtonCont,
     SBIcon,
     BookletHomeIconCont,
-    BookletSideBar,
-    ModalStyle,
-    CenterModalView,
-    ContentModalButtonCont,
-    ModalButtonCont,
-    ModalButtons,
-    ModalButtonText,
-    BookletHeadingText,
     BookletHeadingTextInput,
     DateContentPane,
-    BSIconCont,
-    BookshelfIcon,
-    BookshelfImage,
-    BSButtonSubText,
     BookletHomeIconContBTN,
     BookshelfContPane,
     DateSub,
 } from '../../components/styles';
-import { BookletModalWrap } from '../../components/BookletModalWrap';
-import { SingleQuestion, MultiSelectQuestion } from '../../components/BookletModalContent';
-import { QuestionCard } from '../../components/QuestionCard';
-import { publishBooklet, saveBooklet } from './Bookshelf';
+import { BookletModalWrap } from '~/components/BookletModalWrap';
+import {
+    SingleQuestion,
+    MultiSelectQuestion,
+    ImageQuestion,
+    DeleteContent,
+    SaveContent,
+    PublishContent,
+} from '~/components/BookletModalContent';
+import { QuestionCard } from '~/components/QuestionCard';
 import Utils from '../../utils/utils';
 import {
     queryQuestionDetail,
@@ -65,9 +37,7 @@ import {
     apiUpdateTeachQuestion,
 } from '~/common-file/apis/index';
 import moment from 'moment';
-import { clearDate, subduedate } from '../../components/growtext';
-export var noofques = 0;
-export var questions = [];
+
 const CreateNewBookletPage = (props) => {
     const id = props.route?.params?.id;
 
@@ -77,12 +47,25 @@ const CreateNewBookletPage = (props) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [currentModal, setCurrentModal] = useState();
 
-    // 单选弹窗Input change事件
+    // single question Input change event
     const [selectedQuestionValue, setSelectedQuestionValue] = useState({});
 
+    const [multiQuestionValue, setMultiQuestionValue] = useState('');
+
+    const [multiQuestionOptions, setMultiQuestionOptions] = useState([
+        { label: '', checked: false },
+        { label: '', checked: false },
+        { label: '', checked: false },
+        { label: '', checked: false },
+    ]);
+
     const [questionList, setQuestionList] = useState([]);
+    const [dateVisible, setDateVisible] = useState(false);
     const [currentDueDate, setCurrentDueDate] = useState();
-    const [isActive, setIsActive] = useState(false);
+
+    const handleMultiQuestionChang = (optionValue) => {
+        setMultiQuestionOptions(optionValue);
+    };
 
     const tabs = [
         {
@@ -93,32 +76,38 @@ const CreateNewBookletPage = (props) => {
         {
             key: 2,
             icon: require('~/assets/icons/48px/Outline/Interface/Layout.png'),
-            modal: <MultiSelectQuestion />,
+            modal: (
+                <MultiSelectQuestion
+                    question={multiQuestionValue}
+                    options={multiQuestionOptions}
+                    onChange={setMultiQuestionValue}
+                    onOptionChange={handleMultiQuestionChang}
+                />
+            ),
         },
         {
             key: 3,
             icon: require('~/assets/icons/48px/Outline/Devices/Camera.png'),
-            modal: <MultiSelectQuestion />,
+            modal: <ImageQuestion value={selectedQuestionValue} onChange={setSelectedQuestionValue} />,
         },
         {
             key: 4,
             icon: require('~/assets/icons/48px/Outline/Interface/History.png'),
-            // modal: DueDateModal(),
         },
         {
             key: 5,
             icon: require('~/assets/icons/48px/Outline/Interface/Trash.png'),
-            // modal: DeleteModal(),
+            modal: <DeleteContent />,
         },
         {
             key: 6,
             icon: require('~/assets/icons/48px/Outline/Interface/Save.png'),
-            // modal: SaveModal(),
+            modal: <SaveContent />,
         },
         {
             key: 7,
             icon: require('~/assets/icons/48px/Outline/Files/Upload.png'),
-            // modal: <PublishModal onChange={handlePublishValue} />,
+            modal: <PublishContent />,
         },
     ];
 
@@ -147,11 +136,14 @@ const CreateNewBookletPage = (props) => {
     };
 
     const handleTabPress = (item) => {
-        console.log('🚀 ~ file: CreateNewBookletPage.js ~ line 150 ~ handleTabPress ~ item', item);
         setCurrentTab(item.key);
         if (item.modal) {
+            console.log(item.modal);
             setCurrentModal(item.modal);
             setModalOpen(true);
+        }
+        if (item.key === 4) {
+            setDateVisible(true);
         }
     };
 
@@ -172,19 +164,15 @@ const CreateNewBookletPage = (props) => {
     /**
      * 截止日期弹窗确定事件
      */
-    const handleSetDueDate = () => {
-        if (validateDueDate(subduedate)) {
-            setCurrentDueDate(subduedate);
-            handleModalCancel();
+    const handleSetDueDate = (v) => {
+        let curDate = moment(v);
+
+        if (!curDate.isAfter(moment())) {
+            Alert.alert('Date has already passed');
         } else {
-            let l = moment(subduedate, 'YYYY-MM-DD HH-mm-ss');
-            if (!l.isAfter(moment())) {
-                Alert.alert('Date has already passed');
-            } else {
-                Alert.alert("Invalid date. Use 'YYYY-MM-DD HH-mm-ss' format.");
-            }
+            setCurrentDueDate(curDate.format('YYYY-MM-DD HH-mm-ss'));
+            setDateVisible(false);
         }
-        clearDate();
     };
 
     /**
@@ -240,7 +228,6 @@ const CreateNewBookletPage = (props) => {
 
         switch (currentTab) {
             case 1:
-                storeData(1);
                 nextQuestionList.push({
                     type: 'single',
                     key: nextQuestionList.length + 1,
@@ -251,23 +238,21 @@ const CreateNewBookletPage = (props) => {
                 handleModalCancel();
                 break;
             case 2:
-                storeData(2);
                 nextQuestionList.push({
                     type: 'multiple',
                     key: nextQuestionList.length + 1,
-                    question: MCQ1,
-                    answer: [MCA1, MCA2, MCA3, MCA4],
+                    question: multiQuestionValue,
+                    answer: multiQuestionOptions,
                 });
                 setQuestionList([...nextQuestionList]);
                 handleModalCancel();
                 break;
             case 3:
-                storeData(3);
                 nextQuestionList.push({
                     type: 'image',
                     key: nextQuestionList.length + 1,
-                    question: ImageQ,
-                    answer: ImageA,
+                    question: selectedQuestionValue.question,
+                    answer: selectedQuestionValue.answer,
                 });
                 setQuestionList([...nextQuestionList]);
                 handleModalCancel();
@@ -290,19 +275,6 @@ const CreateNewBookletPage = (props) => {
     const handleModalCancel = () => {
         setModalOpen(false);
         setCurrentTab(0);
-    };
-
-    const renderQuestion = (record) => {
-        switch (record.type) {
-            case 'single':
-                return scrollSR(record.question, record.answer);
-            case 'multiple':
-                return scrollMC(record.question, ...record.answer);
-            case 'image':
-                return scrollIMG(record.question, record.answer);
-            default:
-                break;
-        }
     };
 
     const handleToHomePage = () => {};
@@ -365,6 +337,7 @@ const CreateNewBookletPage = (props) => {
                         //     {renderQuestion(item)}
                         // </QuestionContentPane>
                         <Swipeout
+                            key={index}
                             backgroundColor="#fff"
                             right={[
                                 {
@@ -377,11 +350,21 @@ const CreateNewBookletPage = (props) => {
                                 },
                             ]}
                         >
-                            <QuestionCard />
+                            <QuestionCard data={item} />
                         </Swipeout>
                     ))}
                 </ScrollablePane>
             </BookletMainBar>
+
+            <View>
+                <DateTimePickerModal
+                    isVisible={dateVisible}
+                    mode="datetime"
+                    date={new Date()}
+                    onConfirm={handleSetDueDate}
+                    onCancel={() => {}}
+                />
+            </View>
         </BookletContentPane>
     );
 };

@@ -25,55 +25,28 @@ import {
     SignupButtonsCont,
 } from '../components/styles';
 
-import baseUrl from '../common-file/config/index';
+import { register } from '~/common-file/apis';
 
 export default function SignUp({ navigation }) {
-    const handleSR = async (val) => {
-        console.log('0000', `${baseUrl}/register`);
+    const [email, onChangeNumber] = React.useState(null);
+    const [pw, onChangeNumber2] = React.useState(null);
+    const [checked, setChecked] = React.useState(false);
+
+    const handleSignup = async (type) => {
         if (!email || !pw) {
             Alert.alert('Please enter your Email or Password!');
             return;
         }
-        const Student_Res = { email, password: pw, role: 0 };
 
-        //  const _result = await fetch(
-        //       'http://localhost:3000/register',{
-        //           method: 'POST',
-        //           headers: {
-        //             Accept: 'application/json',
-        //             'Content-Type': 'application/json'
-        //           },
-        //           body: Student_Res
-        //       }
-        //     )
-        //       .then((response) => response.data)
-        //       .catch((error) => {
-        //         console.error(error);
-        //       });
+        const params = {
+            type: Number(type),
+            email,
+            password: pw,
+        };
 
-        //       console.log('result',_result)
+        const result = await register(params);
 
-        let response = await fetch(`${baseUrl}/register`, {
-            method: 'POST', // ，GET/POST/PUT/DELETE
-            mode: 'cors', // ，no-cors/*cors/same-origin
-            cache: 'no-cache', // ，*default/no-cache/reload/force-cache/only-if-cached
-            credentials: 'same-origin', // cookie，*same-origin/include/omit
-            headers: {
-                'Content-Type': 'application/json', // body，'application/x-www-form-urlencoded'
-            },
-            redirect: 'follow', // redirect，*follow/manual/error
-            referrer: 'no-referrer', // ，no-referrer, *client
-            body: JSON.stringify(Student_Res),
-        });
-
-        let responseJson = await response.json();
-        console.log('11111', responseJson);
-
-        // ! example:  go to home page
-
-        // setRoleVariable('roleStudent')
-
-        if (responseJson[0].code === 200) {
+        if (result) {
             Alert.alert('Registration Successful');
 
             setTimeout(() => {
@@ -82,71 +55,7 @@ export default function SignUp({ navigation }) {
         } else {
             Alert.alert(responseJson[0].message);
         }
-
-        console.log('select error');
     };
-
-    // console.log(123, navigation);
-    //   alert(response);
-    //   console.log(123)
-
-    const handleTR = async (val) => {
-
-        if (!email || !pw) {
-            Alert.alert('Please enter your Email or Password!');
-            return;
-        }
-        const Teacher_Res = { email, password: pw, role: 1 };
-
-        let response = await fetch(`${baseUrl}/register`, {
-            method: 'POST', // ，GET/POST/PUT/DELETE
-            mode: 'cors', // ，no-cors/*cors/same-origin
-            cache: 'no-cache', // ，*default/no-cache/reload/force-cache/only-if-cached
-            credentials: 'same-origin', // cookie，*same-origin/include/omit
-            headers: {
-                'Content-Type': 'application/json', // body，'application/x-www-form-urlencoded'
-            },
-            redirect: 'follow', // redirect，*follow/manual/error
-            referrer: 'no-referrer', // ，no-referrer, *client
-            body: JSON.stringify(Teacher_Res),
-        });
-
-        let responseJson = await response.json();
-        console.log('11111', responseJson);
-
-        if (responseJson[0].code === 200) {
-            Alert.alert('Registration Successful');
-
-            setTimeout(() => {
-                navigation.push('LoginName', { name: 'Teacher.li' });
-            }, 1000);
-        } else {
-            Alert.alert(responseJson[0].message);
-        }
-    };
-
-    const [email, onChangeNumber] = React.useState(null);
-    const [pw, onChangeNumber2] = React.useState(null);
-    const [checked, setChecked] = React.useState(false);
-    const responseGoogle = (response) => {
-        alert(response);
-    };
-
-    const styles = StyleSheet.create({
-        container: {
-            paddingTop: 50,
-        },
-        tinyLogo: {
-            width: 350,
-            height: 350,
-            zIndex: 11,
-            backgroundColor: 'red',
-        },
-        logo: {
-            width: 66,
-            height: 58,
-        },
-    });
 
     return (
         <SignupContentPane>
@@ -216,10 +125,10 @@ export default function SignUp({ navigation }) {
                 </RememberCont>
             </UpperSignupPane>
             <SignupButtonsCont>
-                <SignupButtons testID="SignIn.Button" onPress={handleSR}>
+                <SignupButtons testID="SignIn.Button" onPress={() => handleSignup(2)}>
                     <SignupButtonText>Student Registration</SignupButtonText>
                 </SignupButtons>
-                <SignupButtons onPress={handleTR}>
+                <SignupButtons onPress={() => handleSignup(1)}>
                     <SignupButtonText>Teacher Registration</SignupButtonText>
                 </SignupButtons>
             </SignupButtonsCont>

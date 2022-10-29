@@ -11,21 +11,20 @@ import {
     StudButtonText,
 } from '../components/styles';
 import useStore from '~/common-file/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Teacher_student_HomePage = ({ navigation, setSelectedTab }) => {
     const user = useStore((state) => state.user);
+
     return (
         <HomeContentPane>
-            <HomePageProfileImage>
-                {user.role === 'roleTeacher' && <Image source={require('../assets/Teacher.png')}></Image>}
-                {user.role === 'roleStudent' && <Image source={require('../assets/Student.png')}></Image>}
-            </HomePageProfileImage>
+            <HomePageProfileImage>{user?.image ? <Image source={{ uri: user.image }} /> : null}</HomePageProfileImage>
             <StudentNamePane>
-                {user.role === 'roleTeacher' && (
-                    <StudentNameButton title={`Teacher Name: ${user?.name}`} color="#9EE30A" />
+                {user.role === 'teacher' && (
+                    <StudentNameButton title={`Teacher Name: ${user?.username}`} color="#9EE30A" />
                 )}
-                {user.role === 'roleStudent' && (
-                    <StudentNameButton title={`Student Name: ${user?.name}`} color="#9EE30A" />
+                {user.role === 'student' && (
+                    <StudentNameButton title={`Student Name: ${user?.username}`} color="#9EE30A" />
                 )}
             </StudentNamePane>
             <HomePageButtonsContainer>
@@ -40,18 +39,13 @@ const Teacher_student_HomePage = ({ navigation, setSelectedTab }) => {
                     <StudButtonText>Quiz</StudButtonText>
                 </HomePageButtonTextCont>
                 <HomePageButtonTextCont>
-                    {user.role === 'roleTeacher' && (
-                        <TouchableHighlight>
-                            <HomePageButtons />
-                        </TouchableHighlight>
+                    <TouchableHighlight>
+                        <HomePageButtons />
+                    </TouchableHighlight>
+                    {user.role === 'teacher' && (
+                        <StudButtonText onPress={() => navigation.push('Class')}>Classes</StudButtonText>
                     )}
-                    {user.role === 'roleStudent' && (
-                        <TouchableHighlight>
-                            <HomePageButtons />
-                        </TouchableHighlight>
-                    )}
-                    {user.role === 'roleTeacher' && <StudButtonText>Classes</StudButtonText>}
-                    {user.role === 'roleStudent' && <StudButtonText>Class Join Code</StudButtonText>}
+                    {user.role === 'student' && <StudButtonText>Class Join Code</StudButtonText>}
                 </HomePageButtonTextCont>
             </HomePageButtonsContainer>
         </HomeContentPane>

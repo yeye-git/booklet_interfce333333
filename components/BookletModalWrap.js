@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     content: {
         width: '100%',
         height: 'auto',
-        backgroundColor: '#f6cefc',
+        // backgroundColor: '#f6cefc',
         padding: 20,
     },
     footer: {

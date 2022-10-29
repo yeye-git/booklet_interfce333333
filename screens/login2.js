@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Alert } from 'react-native';
+import storage from '~/common-file/store/storage';
 import {
     BottomButtons,
     BottomButtonText,
@@ -29,19 +30,18 @@ const LoginPage = ({ navigation, c_setIsVisible, c_setTextBtn }) => {
         }
 
         const params = {
-            role: Number(type),
+            type: Number(type),
             email,
             password: pw,
         };
 
         const result = await login(params);
         if (result) {
+            console.log('🚀 ~ file: login2.js ~ line 40 ~ handleLogin ~ result', result);
             setUser({
-                description: '123213',
-                label: 'asdsa',
-                role: Number(type) === 1 ? 'roleTeacher' : 'roleStudent',
-                name: 'test',
+                ...result.userInfo,
             });
+            storage.setItem('token', result.token);
 
             Alert.alert('Login Successful');
 
@@ -95,7 +95,7 @@ const LoginPage = ({ navigation, c_setIsVisible, c_setTextBtn }) => {
                 <LoginButtons onPress={() => handleLogin(1)}>
                     <LoginButtonText>T-Login</LoginButtonText>
                 </LoginButtons>
-                <LoginButtons onPress={() => handleLogin(0)}>
+                <LoginButtons onPress={() => handleLogin(212)}>
                     {/* <LoginButtons onPress={() =>Alert.alert('11')}> */}
                     <LoginButtonText>S-Login</LoginButtonText>
                 </LoginButtons>

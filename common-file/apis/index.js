@@ -3,8 +3,23 @@ import request from '~/utils/request';
 import { baseUrl } from '../config/index';
 
 export const login = async (data) => {
+    const response = await request({
+        url: '/api/login',
+        method: 'POST',
+        data,
+    });
+
+    if (response.token) {
+        return response;
+    } else {
+        Alert.alert(response.errMessage || '');
+        return false;
+    }
+};
+
+export const register = async (data) => {
     const [response] = await request({
-        url: '/login',
+        url: '/api/register',
         method: 'POST',
         data,
     });
@@ -86,4 +101,16 @@ export const apiDeleteAllQuestion = async ({ id, ...data }) => {
     } else {
         Alert.alert(response.message);
     }
+};
+
+/**
+ * get subjects list
+ * @param {*} name
+ */
+export const getSubjects = async (data) => {
+    const response = await request({
+        url: '/teacher/subjects',
+        data,
+    });
+    console.log('🚀 ~ file: index.js ~ line 116 ~ getSubjects ~ response', response);
 };
