@@ -37,7 +37,6 @@ const LoginPage = ({ navigation, c_setIsVisible, c_setTextBtn }) => {
 
         const result = await login(params);
         if (result) {
-            console.log('🚀 ~ file: login2.js ~ line 40 ~ handleLogin ~ result', result);
             setUser({
                 ...result.userInfo,
             });

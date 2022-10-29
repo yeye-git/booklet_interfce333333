@@ -18,16 +18,17 @@ export const login = async (data) => {
 };
 
 export const register = async (data) => {
-    const [response] = await request({
+    const response = await request({
         url: '/api/register',
         method: 'POST',
         data,
     });
 
-    if (response.code === 200) {
+    if (response.message === 'register success') {
+        Alert.alert(response.message || '');
+
         return true;
     } else {
-        Alert.alert(response.message || '');
         return false;
     }
 };

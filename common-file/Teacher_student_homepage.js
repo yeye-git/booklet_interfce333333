@@ -43,7 +43,7 @@ const Teacher_student_HomePage = ({ navigation, setSelectedTab }) => {
                         <HomePageButtons />
                     </TouchableHighlight>
                     {user.role === 'teacher' && (
-                        <StudButtonText onPress={() => navigation.push('Class')}>Classes</StudButtonText>
+                        <StudButtonText onPress={() => navigation.push('Subject')}>Classes</StudButtonText>
                     )}
                     {user.role === 'student' && <StudButtonText>Class Join Code</StudButtonText>}
                 </HomePageButtonTextCont>

@@ -14,6 +14,7 @@ import CreateNewBookletPage from './screens/teacher/CreateNewBookletPage';
 import TeacherStudentMessage from './common-file/Teacher_Student_Message';
 import TeacherStudentConversation from './common-file/Teacher_Student_Conversation';
 import { ClassFrame } from './screens/teacher/Class';
+import SubjectPage from './screens/teacher/Subject';
 import DemoBooklet from './screens/student/Booklet';
 
 function LogoTitle1(props) {
@@ -157,6 +158,13 @@ export default function App() {
                     component={TeacherStudentConversation}
                     options={({ navigation, route }) => ({
                         headerTitle: (props) => <Text>TeacherStudentConversation</Text>,
+                    })}
+                />
+                <Stack.Screen
+                    name="Subject"
+                    component={SubjectPage}
+                    options={({ navigation, route }) => ({
+                        headerTitle: (props) => <Text>Subject</Text>,
                     })}
                 />
                 <Stack.Screen
