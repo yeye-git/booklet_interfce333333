@@ -3,9 +3,9 @@ import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 
 const renderContent = (data) => {
     switch (data.type) {
-        case 'single':
+        case 1:
             return <Text>{data.answer}</Text>;
-        case 'multiple':
+        case 2:
             return (
                 <View>
                     {(data.answer || []).map((o) => (

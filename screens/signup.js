@@ -47,10 +47,8 @@ export default function SignUp({ navigation }) {
         const result = await register(params);
 
         if (result) {
-            Alert.alert('Registration Successful');
-
             setTimeout(() => {
-                navigation.push('LoginName', { name: 'Student.li' });
+                navigation.push('LoginName');
             }, 1000);
         } else {
             Alert.alert(responseJson[0].message);

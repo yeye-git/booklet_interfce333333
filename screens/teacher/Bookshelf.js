@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, StyleSheet, Text, DeviceEventEmitter } from 'react-native';
+import { View, Image, StyleSheet, Text, DeviceEventEmitter, Alert } from 'react-native';
 import baseUrl from '../../common-file/config';
 import {
     BookshelfBorder,
@@ -19,34 +19,19 @@ import {
 import { Searchbar } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native';
 import Utils from '../../utils/utils';
+import { getPaperList } from '~/common-file/apis';
 var completedbooklets = [];
 var nocompbook = 0;
 var incompletebooklets = [];
 var noincompbook = 0;
-var horizontalcontno = 0;
 
 export const BookshelfT = ({ navigation }) => {
     const isFocused = useIsFocused();
     const [searchQuery, setSearchQuery] = React.useState('');
-    const [questionAnswerInfo, setQuestionAnswerInfo] = React.useState({
-        complete: [],
-        inProgress: [],
-    });
+    const [completedList, setCompletedList] = useState([]);
+    const [inProgressList, setInProgressList] = useState([]);
 
     const onChangeSearch = (query) => setSearchQuery(query);
-
-    const popBooklet = (response) => {
-        navigation.pop();
-    };
-
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState('Recent');
-    const [items, setItems] = useState([
-        { label: 'Recent', value: 'Recent' },
-        { label: 'Week', value: 'Week' },
-        { label: 'Month', value: 'Month' },
-        { label: 'Year', value: 'Year' },
-    ]);
 
     const styles = StyleSheet.create({
         TitleBarstyle: {
@@ -71,35 +56,20 @@ export const BookshelfT = ({ navigation }) => {
     });
 
     const getQuestionAnswerList = async () => {
-        console.log('----4------2--------', Utils.getValue('user_id'));
-        if (!Utils.userId) {
-            console.log('user id empty');
-            return;
-        }
-
         try {
-            console.log('---call api');
-            let response = await fetch(`${baseUrl}/teach/questionAnswer?user_id=${Utils.userId}`, {
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                headers: { 'Content-Type': 'application/json' },
-                redirect: 'follow',
-                referrer: 'no-referrer',
-            });
+            let result = await getPaperList({});
 
-            let responseJson = await response.json();
-
-            const { data } = responseJson[0];
-            console.log('res:', data);
-            const tmp = { ...questionAnswerInfo };
-            tmp.complete = data.filter((p) => p.release_time);
-            tmp.inProgress = data.filter((p) => !p.release_time);
-            setQuestionAnswerInfo(tmp);
+            const complete = result.filter((p) => p.publish === '2');
+            const inProgress = result.filter((p) => p.publish === '1');
+            setCompletedList(complete);
+            setInProgressList(inProgress);
         } catch (ex) {
             console.log(ex);
         }
+    };
+
+    const handleToCreatePage = (item) => {
+        navigation.push('CreateNewBookletPage', { pid: item.pid, status: item.publish, title: item.papername });
     };
 
     React.useEffect(() => {
@@ -129,64 +99,50 @@ export const BookshelfT = ({ navigation }) => {
                 />
                 {/* </View> */}
             </SearchBarBSCont>
-            <BSRecentBar>
-                <View style={{ backgroundColor: 'red', flexDirection: 'row', justifyContent: 'flex-end' }}>
-                    {/* <Text>fanhui1</Text>
-                    <Text>fanhui</Text>
-                    <Text>tian</Text> */}
-                </View>
-            </BSRecentBar>
             <CompletedBooklets>
                 <BSTitleBarCont>
                     <BSButtonSubText>Completed Booklets</BSButtonSubText>
                 </BSTitleBarCont>
                 <CompletedBookletsScroll>
-                    <HorizontalCont>{isinFocus()}</HorizontalCont>
-                    {/*<HorizontalCont>
-                        {isinFocus}
-                        {questionAnswerInfo.complete &&
-                            questionAnswerInfo.complete.length > 0 &&
-                            questionAnswerInfo.complete.map((item, index) => {
-                                return (
-                                    <BSIconCont key={index}>
-                                        <BookshelfIcon>
-                                            <BookshelfImage source={require('../../assets/books.png')} />
-                                        </BookshelfIcon>
-                                        <BSButtonSubText>{item.title}</BSButtonSubText>
-                                    </BSIconCont>
-                                );
-                            })}
+                    <HorizontalCont>
+                        {/* {isinFocus} */}
+                        {(completedList || []).map((item, index) => {
+                            return (
+                                <BSIconCont key={item.pid}>
+                                    <BookshelfIcon
+                                        onPress={() => {
+                                            handleToCreatePage(item);
+                                        }}
+                                    >
+                                        <BookshelfImage source={require('../../assets/books.png')} />
+                                    </BookshelfIcon>
+                                    <BSButtonSubText>{item.papername}</BSButtonSubText>
+                                </BSIconCont>
+                            );
+                        })}
                     </HorizontalCont>
-                        */}
                 </CompletedBookletsScroll>
                 <BookshelfBorder />
                 <BSTitleBarCont>
                     <BSButtonSubText>In Progress</BSButtonSubText>
                 </BSTitleBarCont>
                 <HorizontalCont>
-                    {/* {questionAnswerInfo.inProgress &&
-                        questionAnswerInfo.inProgress.length > 0 &&
-                        questionAnswerInfo.inProgress.map((item, index) => {
-                            return (
-                                <BSIconCont key={index}>
-                                    <BookshelfIcon
-                                        onPress={() => {
-                                            console.log('-----item,', item, index);
-                                            Utils.currentQuestion = item;
-                                            Utils.questionId = item.id;
-                                            navigation.push('CreateNewBookletPage', { params: item });
-                                        }}
-                                    >
-                                        <BookshelfImage source={require('../../assets/books.png')} />
-                                    </BookshelfIcon>
-                                    <BSButtonSubText>{item.title}</BSButtonSubText>
-                                </BSIconCont>
-                            );
-                        })}
-                    */}
-                    {createBooklet(navigation)}
+                    {(inProgressList || []).map((item, index) => {
+                        return (
+                            <BSIconCont key={item.pid}>
+                                <BookshelfIcon
+                                    onPress={() => {
+                                        handleToCreatePage(item);
+                                    }}
+                                >
+                                    <BookshelfImage source={require('../../assets/inProgress.png')} />
+                                </BookshelfIcon>
+                                <BSButtonSubText>{item.papername}</BSButtonSubText>
+                            </BSIconCont>
+                        );
+                    })}
 
-                    {isinFocus2()}
+                    {createBooklet(navigation)}
                 </HorizontalCont>
             </CompletedBooklets>
         </BookshelfContPane>
@@ -197,15 +153,6 @@ export const BookshelfS = ({ navigation }) => {
     const [list, setList] = React.useState([]);
 
     const onChangeSearch = (query) => setSearchQuery(query);
-
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState('Recent');
-    const [items, setItems] = useState([
-        { label: 'Recent', value: 'Recent' },
-        { label: 'Week', value: 'Week' },
-        { label: 'Month', value: 'Month' },
-        { label: 'Year', value: 'Year' },
-    ]);
 
     const styles = StyleSheet.create({
         TitleBarstyle: {
@@ -340,8 +287,6 @@ function isinFocus2() {
 }
 function createBooklet(navigation) {
     const handleNewBooklet = (response) => {
-        Utils.currentQuestion = null;
-        Utils.questionId = null;
         navigation.push('CreateNewBookletPage');
     };
     return (

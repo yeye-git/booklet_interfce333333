@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Button } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { uploadImage } from '~/common-file/apis';
 
 const UploadImage = () => {
     const [askGalleryPermission, setAskGalleryPermission] = useState(null);
@@ -17,11 +18,29 @@ const UploadImage = () => {
     const handlePickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.allowsEditing,
-            allowsEditing: true,
             aspect: [1, 1],
             quality: 1,
         });
-        console.log('🚀 ~ file: UploadImage.js ~ line 24 ~ handlePickImage ~ result', result);
+        if (result.cancelled) {
+            return;
+        }
+
+        let localUri = result.uri;
+        let filename = localUri.split('/').pop();
+
+        // Infer the type of the image
+        let match = /\.(\w+)$/.exec(filename);
+        let type = match ? `image/${match[1]}` : `image`;
+
+        let formData = new FormData();
+        // Assume "photo" is the name of the form field the server expects
+        formData.append('photo', { uri: localUri, name: filename, type });
+        console.log('🚀 ~ file: UploadImage.js ~ line 39 ~ handlePickImage ~ formData', formData);
+
+        const imgPath = await uploadImage({
+            data: formData,
+        });
+        console.log('🚀 ~ file: UploadImage.js ~ line 43 ~ handlePickImage ~ imgPath', imgPath);
     };
 
     if (!askGalleryPermission) {

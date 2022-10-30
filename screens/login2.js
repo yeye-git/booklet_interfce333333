@@ -30,7 +30,7 @@ const LoginPage = ({ navigation, c_setIsVisible, c_setTextBtn }) => {
         }
 
         const params = {
-            type: Number(type),
+            type,
             email,
             password: pw,
         };
@@ -91,10 +91,10 @@ const LoginPage = ({ navigation, c_setIsVisible, c_setTextBtn }) => {
                 ></LoginForms>
             </LoginContForms>
             <LoginContSubmissionButtons>
-                <LoginButtons onPress={() => handleLogin(1)}>
+                <LoginButtons onPress={() => handleLogin('1')}>
                     <LoginButtonText>T-Login</LoginButtonText>
                 </LoginButtons>
-                <LoginButtons onPress={() => handleLogin(212)}>
+                <LoginButtons onPress={() => handleLogin('2')}>
                     {/* <LoginButtons onPress={() =>Alert.alert('11')}> */}
                     <LoginButtonText>S-Login</LoginButtonText>
                 </LoginButtons>

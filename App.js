@@ -7,7 +7,7 @@ import Setting from './screens/settings';
 import Login from './screens/login';
 import CommonBar from './common-file/NavigationBar';
 import Teacher_student_HomePage from './common-file/Teacher_student_homepage';
-import TeacherProfile from './screens/teacher/Profile-Teacher';
+import TeacherProfile from './common-file/Teacher_Student_Profile';
 import BookSelf from './common-file/Teacher_Student_BookshelfPage';
 import ForgetPassword from './common-file/Forgrt_Password';
 import CreateNewBookletPage from './screens/teacher/CreateNewBookletPage';
@@ -15,6 +15,7 @@ import TeacherStudentMessage from './common-file/Teacher_Student_Message';
 import TeacherStudentConversation from './common-file/Teacher_Student_Conversation';
 import { ClassFrame } from './screens/teacher/Class';
 import SubjectPage from './screens/teacher/Subject';
+import SendBookletPage from './screens/teacher/SendBooklet';
 import DemoBooklet from './screens/student/Booklet';
 
 function LogoTitle1(props) {
@@ -108,7 +109,7 @@ export default function App() {
                     return <Teacher_student_HomePage {...props} navigation={navigation} />;
                 }}
                 message={<MessageBar></MessageBar>}
-                profile={<ProfileBar navigation={navigation}></ProfileBar>}
+                profile={<TeacherProfile navigation={navigation} />}
             ></CommonBar>
         );
     };
@@ -172,6 +173,13 @@ export default function App() {
                     component={ClassFrame}
                     options={({ navigation, route }) => ({
                         headerTitle: (props) => <Text>Class</Text>,
+                    })}
+                />
+                <Stack.Screen
+                    name="SendBooklet"
+                    component={SendBookletPage}
+                    options={({ navigation, route }) => ({
+                        headerTitle: (props) => <Text>Booklet</Text>,
                     })}
                 />
                 <Stack.Screen

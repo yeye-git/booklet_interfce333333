@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import CommonBar from '../../common-file/NavigationBar';
@@ -16,14 +16,17 @@ import {
 } from '../../components/styles';
 import { getSubjects } from '~/common-file/apis';
 export default SubjectPage = ({ navigation }) => {
+    const [subjectList, setSubjectList] = useState([]);
     useEffect(() => {
         handleSearchList();
     }, []);
 
     const handleSearchList = async () => {
         const result = await getSubjects();
-        console.log('🚀 ~ file: Class.js ~ line 26 ~ handleSearchList ~ result', result);
+
+        setSubjectList(result);
     };
+
     return (
         <View style={styles.container}>
             <ClassViewTopPad></ClassViewTopPad>
@@ -36,48 +39,15 @@ export default SubjectPage = ({ navigation }) => {
                 <Searchbar placeholder="Search" />
             </View>
 
-            <ClassSubjects>
-                <ClassRow>
-                    <SubjectButtons>
-                        <ClassButtonText>Geography</ClassButtonText>
-                    </SubjectButtons>
-                    <SubjectButtons>
-                        <ClassButtonText>History</ClassButtonText>
-                    </SubjectButtons>
-                </ClassRow>
-                <ClassRow>
-                    <SubjectButtons>
-                        <ClassButtonText>English</ClassButtonText>
-                    </SubjectButtons>
-                    <SubjectButtons>
-                        <ClassButtonText>Maths</ClassButtonText>
-                    </SubjectButtons>
-                </ClassRow>
-                <ClassRow>
-                    <SubjectButtons>
-                        <ClassButtonText>SOSE</ClassButtonText>
-                    </SubjectButtons>
-                    <SubjectButtons>
-                        <ClassButtonText>PE</ClassButtonText>
-                    </SubjectButtons>
-                </ClassRow>
-                <ClassRow>
-                    <SubjectButtons>
-                        <ClassButtonText>Music</ClassButtonText>
-                    </SubjectButtons>
-                    <SubjectButtons>
-                        <ClassButtonText>Drama</ClassButtonText>
-                    </SubjectButtons>
-                </ClassRow>
-                <ClassRow>
-                    <SubjectButtons>
-                        <ClassButtonText>Science</ClassButtonText>
-                    </SubjectButtons>
-                    <SubjectButtons>
-                        <ClassButtonText>Technology</ClassButtonText>
-                    </SubjectButtons>
-                </ClassRow>
-            </ClassSubjects>
+            <View style={styles.content}>
+                {(subjectList || []).map((o) => (
+                    <View key={o.sid} style={styles.item}>
+                        <SubjectButtons onPress={() => navigation.push('Class', { sid: o.sid })}>
+                            <ClassButtonText>{o.name}</ClassButtonText>
+                        </SubjectButtons>
+                    </View>
+                ))}
+            </View>
         </View>
     );
 };
@@ -86,14 +56,14 @@ const styles = StyleSheet.create({
     container: {
         height: '100%',
         width: '100%',
-        background: 'linear-gradient(180deg, rgba(153, 232, 236, 0.9) 28.65%, rgba(255, 255, 255, 0.9) 100%)',
     },
-    searchWrap: {},
-    search: {
-        padding: 10,
-        backgroundColor: '#fff',
+    content: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        flexWrap: 'wrap',
         width: '100%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        paddingHorizontal: 30,
     },
 });

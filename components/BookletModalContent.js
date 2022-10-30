@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 import UploadImage from './UploadImage';
 
@@ -77,7 +77,7 @@ export const MultiSelectQuestion = ({ question = '', options = [], onChange, onO
                         <View style={{ ...styles.circle, backgroundColor: o.checked ? '#5141B6' : '#fff' }} />
                     </TouchableOpacity>
 
-                    <AutoGrowingTextInput
+                    <TextInput
                         placeholder={'Answer A'}
                         placeholderTextColor={'black'}
                         onChangeText={(text) => {

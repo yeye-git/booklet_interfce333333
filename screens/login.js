@@ -6,6 +6,7 @@ import { BottomSheet } from '@rneui/themed';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { TextInput } from 'react-native-paper';
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
+import storage from '~/common-file/store/storage';
 
 import baseUrl from '../common-file/config';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -28,6 +29,10 @@ export default function Login({ navigation }) {
     const [showEmailText, setShowEmailText] = React.useState(false);
     const [showPasswordText, setShowPasswordText] = React.useState(false);
     const [showConfirmPasswordText, setShowConfirmPasswordText] = React.useState(false);
+
+    useEffect(() => {
+        storage.setItem('token', '');
+    }, []);
 
     const handleStep = async () => {
         if (pageState === 1) {

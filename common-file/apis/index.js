@@ -33,52 +33,101 @@ export const register = async (data) => {
     }
 };
 
+export const updateUser = async (data) => {
+    const response = await request({
+        url: '/user/updateSelf',
+        method: 'POST',
+        data,
+    });
+
+    if (response.message === 'update success') {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+export const uploadImage = async (data) => {
+    const response = await request({
+        url: '/api/upload',
+        method: 'POST',
+        data,
+        isFormData: true,
+    });
+    console.log('🚀 ~ file: index.js ~ line 57 ~ uploadImage ~ response', response);
+
+    if (response.path) {
+        return response.path;
+    } else {
+        return false;
+    }
+};
+
 /**
- * 根据id获取问题详情
+ * query question detail by id
  *
  * @export
  * @param {*} id
  */
 export const queryQuestionDetail = async (id) => {
     const response = await request({
-        url: `${baseUrl}/teach/questionAnswer/${id}`,
+        url: `/user/paper?pid=${id}`,
+        method: 'GET',
     });
 
-    if (response.code === 200) {
+    if (response.data) {
         return response.data;
     }
 };
 
 /**
- * 保存问题
+ * create question
  * @param {*} id
  * @returns
  */
-export const apiSaveTeachQuestion = async (data) => {
+export const apiCreateTeachQuestion = async (data) => {
     const response = await request({
-        url: `${baseUrl}/teach/questionAnswer`,
+        url: '/teacher/v2/createPaper',
+        method: 'POST',
+        data,
+    });
+    console.log('🚀 ~ file: index.js ~ line 93 ~ apiCreateTeachQuestion ~ response', response);
+
+    if (response.data) {
+        return response.data;
+    } else {
+        return false;
+    }
+};
+
+/**
+ * save question
+ * @param {*} id
+ * @returns
+ */
+export const apiSaveAndPublishTeachQuestion = async (data) => {
+    const response = await request({
+        url: '/teacher/changeStatus',
         method: 'POST',
         data,
     });
 
-    if (response.code === 200) {
+    if (response.message === 'success') {
         return true;
     }
 };
 
 /**
- * 编辑问题
+ * delete question
  * @param {*} id
  * @returns
  */
-export const apiUpdateTeachQuestion = async ({ id, ...data }) => {
+export const apiDeleteAllQuestion = async (id) => {
     const response = await request({
-        url: `${baseUrl}/teach/questionAnswer/${id}`,
-        method: 'PUT',
-        data,
+        url: `/teacher/v2/deletePaper?pid=${id}`,
     });
 
-    if (response.code === 200) {
+    if (response.message === 'delete success') {
         return true;
     } else {
         Alert.alert(response.message);
@@ -86,21 +135,17 @@ export const apiUpdateTeachQuestion = async ({ id, ...data }) => {
 };
 
 /**
- * 删除整个问题列表
- * @param {*} id
- * @returns
+ * get paper list
+ * @param {*} name
  */
-export const apiDeleteAllQuestion = async ({ id, ...data }) => {
+export const getPaperList = async (data) => {
     const response = await request({
-        url: `${baseUrl}/teach/questionAnswer/${id}`,
-        method: 'DELETE',
+        url: '/user/paperlist',
+        method: 'POST',
         data,
     });
-
-    if (response.code === 200) {
-        return true;
-    } else {
-        Alert.alert(response.message);
+    if (response.data) {
+        return response.data;
     }
 };
 
@@ -113,5 +158,43 @@ export const getSubjects = async (data) => {
         url: '/teacher/subjects',
         data,
     });
-    console.log('🚀 ~ file: index.js ~ line 116 ~ getSubjects ~ response', response);
+    if (response.data) {
+        return response.data;
+    }
+};
+
+/**
+ * get class list by subject id
+ * @param {*} name
+ */
+export const getClassListBySid = async (sid) => {
+    const response = await request({
+        url: `/teacher/classes?sid=${sid}`,
+        method: 'GET',
+    });
+    if (response.data) {
+        return response.data;
+    }
+};
+
+export const apiCreateClass = async (data) => {
+    const response = await request({
+        url: `/teacher/createClass`,
+        method: 'POST',
+        data,
+    });
+    if (response.message === 'create success') {
+        return true;
+    }
+};
+
+export const apiDeleteClass = async (cid) => {
+    const response = await request({
+        url: `/teacher/deleteClass?cid=${cid}`,
+        method: 'GET',
+    });
+    console.log('🚀 ~ file: index.js ~ line 197 ~ apiDeleteClass ~ response', response);
+    if (response.message === 'delete success') {
+        return true;
+    }
 };

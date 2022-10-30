@@ -32,17 +32,15 @@ import { QuestionCard } from '~/components/QuestionCard';
 import Utils from '../../utils/utils';
 import {
     queryQuestionDetail,
-    apiSaveTeachQuestion,
     apiDeleteAllQuestion,
-    apiUpdateTeachQuestion,
+    apiCreateTeachQuestion,
+    apiSaveAndPublishTeachQuestion,
 } from '~/common-file/apis/index';
 import moment from 'moment';
 
 const CreateNewBookletPage = (props) => {
-    const id = props.route?.params?.id;
-
-    const [detail, setDetail] = useState({});
-    const [heading, setHeading] = useState();
+    const { pid, status, title } = props.route?.params || {};
+    const [heading, setHeading] = useState(title);
     const [currentTab, setCurrentTab] = useState();
     const [modalOpen, setModalOpen] = useState(false);
     const [currentModal, setCurrentModal] = useState();
@@ -113,26 +111,21 @@ const CreateNewBookletPage = (props) => {
 
     useEffect(() => {
         init();
-    });
+    }, []);
 
     const init = async () => {
         // 路由跳转是否携带id（id为编辑态，否则是create）
-        if (id) {
-            const result = await queryQuestionDetail(id);
+        if (pid) {
+            const result = await queryQuestionDetail(pid);
 
             if (result) {
-                onChangeHeading(result.title || '');
-                setDetail(result);
+                setQuestionList(result);
             }
         }
     };
 
     const notify = () => {
         DeviceEventEmitter.emit('update');
-    };
-
-    const handlePublishValue = (val) => {
-        // setDescription(val);
     };
 
     const handleTabPress = (item) => {
@@ -144,20 +137,6 @@ const CreateNewBookletPage = (props) => {
         }
         if (item.key === 4) {
             setDateVisible(true);
-        }
-    };
-
-    const validateDueDate = (date) => {
-        const allPossibleFormats = ['YYYY-MM-DD HH-mm-ss'];
-
-        if (moment(date, allPossibleFormats, true).isValid()) {
-            let k = moment(date, 'YYYY-MM-DD HH-mm-ss');
-            if (k.isAfter(moment())) {
-                return true;
-            }
-            return false;
-        } else {
-            return false;
         }
     };
 
@@ -179,48 +158,77 @@ const CreateNewBookletPage = (props) => {
      * 删除整个问题列表事件
      */
     const handleDeleteQuestion = async () => {
-        if (id) {
-            const result = await apiDeleteAllQuestion({
-                id: detail?.questionId,
-                data: {
-                    params: {
-                        user_id: Utils.userId,
-                    },
-                },
-            });
+        if (pid) {
+            const result = await apiDeleteAllQuestion(pid);
 
             if (result) {
                 Alert.alert('Delete Successful');
+                handleBack();
             }
         } else {
             setQuestionList([]);
+            handleBack();
         }
     };
 
-    /**
-     * 保存问题
-     */
-    const handleSaveQuestion = async () => {
+    const handleSaveQuestion = async (isPublish) => {
+        if (!heading) {
+            Alert.alert('Please enter your Booklet Heading!');
+
+            return;
+        }
+
         const payload = {
-            params: {
-                user_id: Utils.userId,
-            },
             title: heading,
-            questionAnswerList: questionList,
+            questions: questionList,
         };
 
-        let result;
-
-        if (id) {
-            payload['id'] = id;
-            result = await apiUpdateTeachQuestion(payload);
-        } else {
-            result = await apiSaveTeachQuestion(payload);
+        if (pid) {
+            payload['pid'] = pid;
         }
 
-        if (result) {
-            notify();
+        let res = await apiCreateTeachQuestion(payload);
+
+        if (res) {
+            if (isPublish) {
+                let result = await apiSaveAndPublishTeachQuestion({
+                    pid,
+                    type: '2',
+                });
+
+                if (result) {
+                    handleBack();
+                }
+            } else {
+                Alert.alert(pid ? 'Update Success!' : 'Create Success!');
+
+                setTimeout(() => {
+                    handleBack();
+                }, 2000);
+            }
         }
+        // return;
+    };
+
+    const handleDeleteItem = (i) => {
+        const nextList = questionList.filter((_, index) => index !== i);
+
+        setQuestionList([...nextList]);
+    };
+
+    const handleEditItem = (item, index) => {
+        switch (item.type) {
+            case 1:
+                break;
+        }
+    };
+
+    const handleBack = () => {
+        notify();
+
+        handleModalCancel();
+
+        props.navigation.goBack();
     };
 
     const handleModalConfirm = () => {
@@ -229,7 +237,7 @@ const CreateNewBookletPage = (props) => {
         switch (currentTab) {
             case 1:
                 nextQuestionList.push({
-                    type: 'single',
+                    type: 1,
                     key: nextQuestionList.length + 1,
                     question: selectedQuestionValue.question,
                     answer: selectedQuestionValue.answer,
@@ -239,7 +247,7 @@ const CreateNewBookletPage = (props) => {
                 break;
             case 2:
                 nextQuestionList.push({
-                    type: 'multiple',
+                    type: 2,
                     key: nextQuestionList.length + 1,
                     question: multiQuestionValue,
                     answer: multiQuestionOptions,
@@ -249,7 +257,7 @@ const CreateNewBookletPage = (props) => {
                 break;
             case 3:
                 nextQuestionList.push({
-                    type: 'image',
+                    type: 3,
                     key: nextQuestionList.length + 1,
                     question: selectedQuestionValue.question,
                     answer: selectedQuestionValue.answer,
@@ -265,8 +273,11 @@ const CreateNewBookletPage = (props) => {
                 break;
             case 6:
                 handleSaveQuestion();
+                break;
             case 7:
-                console.log('publish');
+                handleSaveQuestion(true);
+                break;
+
             default:
                 break;
         }
@@ -311,13 +322,15 @@ const CreateNewBookletPage = (props) => {
                 />
             </BookletHomeBar>
             <BookletMainBar>
-                <BookletIconBar>
-                    {tabs.map((item) => (
-                        <SBButtonCont key={item.key} onPress={() => handleTabPress(item)}>
-                            <SBIcon resizeMode="cover" source={item.icon} />
-                        </SBButtonCont>
-                    ))}
-                </BookletIconBar>
+                {status !== '2' ? (
+                    <BookletIconBar>
+                        {tabs.map((item) => (
+                            <SBButtonCont key={item.key} onPress={() => handleTabPress(item)}>
+                                <SBIcon resizeMode="cover" source={item.icon} />
+                            </SBButtonCont>
+                        ))}
+                    </BookletIconBar>
+                ) : null}
                 <ScrollablePane style={{ padding: 10 }}>
                     {currentDueDate && (
                         <DateContentPane>
@@ -343,10 +356,16 @@ const CreateNewBookletPage = (props) => {
                                 {
                                     text: 'Delete',
                                     type: 'delete',
+                                    onPress: () => {
+                                        handleDeleteItem(index);
+                                    },
                                 },
                                 {
                                     text: 'Edit',
                                     type: 'secondary',
+                                    onPress: () => {
+                                        handleEditItem(item, index);
+                                    },
                                 },
                             ]}
                         >

@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Searchbar } from 'react-native-paper';
-import { getClassListBySid, apiCreateClass, apiDeleteClass } from '~/common-file/apis';
-import { BookletModalWrap } from '~/components/BookletModalWrap';
+import { getClassListBySid } from '~/common-file/apis';
 
-export const ClassFrame = (props) => {
+const SendBookletPage = (props) => {
     const { sid = '' } = props.route?.params || {};
 
     const [classList, setClassList] = useState([]);
     const [editable, setEditable] = useState(false);
-    const [addVisible, setAddVisible] = useState(false);
-    const [className, setClassName] = useState('');
 
     useEffect(() => {
         handleSearchList();
@@ -20,46 +17,6 @@ export const ClassFrame = (props) => {
         const result = await getClassListBySid(sid);
         setClassList(result || []);
     };
-
-    const handleModalConfirm = async () => {
-        if (!className) {
-            Alert.alert('Please enter your Class Name!');
-            return;
-        }
-
-        const result = await apiCreateClass({
-            sid,
-            className,
-        });
-        console.log('🚀 ~ file: Class.js ~ line 34 ~ handleModalConfirm ~ result', result);
-
-        if (result) {
-            handleModalCancel();
-
-            setTimeout(() => {
-                handleSearchList();
-            }, 200);
-        }
-    };
-
-    const handleDeleteClass = async (item) => {
-        const result = await apiDeleteClass(item.cid);
-
-        if (result) {
-            handleModalCancel();
-
-            setTimeout(() => {
-                handleSearchList();
-            }, 200);
-        }
-    };
-
-    const handleModalCancel = () => {
-        setClassName('');
-        setAddVisible(false);
-        setEditable(!editable);
-    };
-
     return (
         <View style={styles.container}>
             <Image style={styles.icon} source={require('~/assets/Title2.png')} />
@@ -90,7 +47,7 @@ export const ClassFrame = (props) => {
                         {editable && (
                             <TouchableOpacity
                                 onPress={() => {
-                                    handleDeleteClass(o);
+                                    setEditable(!editable);
                                 }}
                             >
                                 <View style={styles.minus}>
@@ -98,45 +55,26 @@ export const ClassFrame = (props) => {
                                 </View>
                             </TouchableOpacity>
                         )}
-                        <TouchableOpacity>
-                            <View style={styles.class}>
-                                <Text style={styles.classText}>{o.className}</Text>
-                            </View>
-                        </TouchableOpacity>
+                        <View style={styles.class}>
+                            <Text style={styles.classText}>{o.className}</Text>
+                        </View>
                     </View>
                 ))}
                 {editable ? (
                     <TouchableOpacity>
                         <View style={styles.item}>
-                            <TouchableOpacity style={styles.add} onPress={() => setAddVisible(true)}>
+                            <View style={styles.add}>
                                 <Text style={styles.minusText}>+</Text>
-                            </TouchableOpacity>
+                            </View>
                         </View>
                     </TouchableOpacity>
                 ) : null}
             </View>
-
-            <BookletModalWrap
-                open={addVisible}
-                animationType="slide"
-                transparent={true}
-                onOk={handleModalConfirm}
-                onCancel={handleModalCancel}
-            >
-                <View styles={styles.wrapper}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder={'Please enter the class name'}
-                        placeholderTextColor={'black'}
-                        keyboardType={'default'}
-                        value={className}
-                        onChangeText={setClassName}
-                    />
-                </View>
-            </BookletModalWrap>
         </View>
     );
 };
+
+export default SendBookletPage;
 
 const styles = StyleSheet.create({
     container: {
@@ -237,17 +175,5 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    input: {
-        padding: 10,
-        margin: 5,
-        borderWidth: 3,
-        borderRadius: 15,
-        borderColor: 'purple',
-        backgroundColor: 'white',
-        minHeight: 60,
-        maxHeight: 60,
-        width: '100%',
-        alignItems: 'center',
     },
 });
