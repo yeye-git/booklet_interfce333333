@@ -2,9 +2,12 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import TabNavigator from 'react-native-tab-navigator';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import useStore from '~/common-file/store';
 
 const CommonBar = (props) => {
-    const [selectedTab, setSelectedTab] = useState('homeWork');
+    const user = useStore((state) => state.user);
+
+    const [selectedTab, setSelectedTab] = useState(user.role === 'teacher' ? 'homeWork' : 'Home');
 
     return (
         <View style={{ height: '100%' }}>
@@ -32,27 +35,28 @@ const CommonBar = (props) => {
                         })}
                     </View>
                 </TabNavigator.Item>
-
-                <TabNavigator.Item
-                    tabStyle={{ margin: 10 }}
-                    titleStyle={{ fontSize: 13 }}
-                    selected={selectedTab === 'homeWork'}
-                    title="Bookshelf"
-                    name="Bookshelf"
-                    renderIcon={() => (
-                        <Image
-                            style={{ width: 34.5, height: 33, paddingBottom: 1 }}
-                            source={require('../assets/Book-open.png')}
-                        />
-                    )}
-                    renderSelectedIcon={() => (
-                        <Image style={{ width: 34.5, height: 33 }} source={require('../assets/Book-open.png')} />
-                    )}
-                    // badgeText="1"
-                    onPress={() => setSelectedTab('homeWork')}
-                >
-                    <View>{props.bookself}</View>
-                </TabNavigator.Item>
+                {user.role === 'teacher' ? (
+                    <TabNavigator.Item
+                        tabStyle={{ margin: 10 }}
+                        titleStyle={{ fontSize: 13 }}
+                        selected={selectedTab === 'homeWork'}
+                        title="Bookshelf"
+                        name="Bookshelf"
+                        renderIcon={() => (
+                            <Image
+                                style={{ width: 34.5, height: 33, paddingBottom: 1 }}
+                                source={require('../assets/Book-open.png')}
+                            />
+                        )}
+                        renderSelectedIcon={() => (
+                            <Image style={{ width: 34.5, height: 33 }} source={require('../assets/Book-open.png')} />
+                        )}
+                        // badgeText="1"
+                        onPress={() => setSelectedTab('homeWork')}
+                    >
+                        <View>{props.bookself}</View>
+                    </TabNavigator.Item>
+                ) : null}
 
                 <TabNavigator.Item
                     tabStyle={{ margin: 10 }}

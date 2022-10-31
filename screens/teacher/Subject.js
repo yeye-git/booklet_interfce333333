@@ -15,8 +15,11 @@ import {
     TitleView,
 } from '../../components/styles';
 import { getSubjects } from '~/common-file/apis';
-export default SubjectPage = ({ navigation }) => {
+export default SubjectPage = ({ navigation, route }) => {
+    const { pid = '' } = route?.params || {};
+
     const [subjectList, setSubjectList] = useState([]);
+
     useEffect(() => {
         handleSearchList();
     }, []);
@@ -42,7 +45,7 @@ export default SubjectPage = ({ navigation }) => {
             <View style={styles.content}>
                 {(subjectList || []).map((o) => (
                     <View key={o.sid} style={styles.item}>
-                        <SubjectButtons onPress={() => navigation.push('Class', { sid: o.sid })}>
+                        <SubjectButtons onPress={() => navigation.push('Class', { sid: o.sid, pid })}>
                             <ClassButtonText>{o.name}</ClassButtonText>
                         </SubjectButtons>
                     </View>

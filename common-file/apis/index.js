@@ -198,3 +198,62 @@ export const apiDeleteClass = async (cid) => {
         return true;
     }
 };
+
+export const getPaperListByClass = async (data) => {
+    const response = await request({
+        url: `/user/paperlist`,
+        method: 'POST',
+        data,
+    });
+    if (response.data) {
+        return response.data;
+    }
+};
+
+/**
+ * bind Class for paper
+ * @param {*} data
+ * @returns
+ */
+export const apiBindClass = async (data) => {
+    const response = await request({
+        url: '/teacher/v2/bindClass',
+        method: 'POST',
+        data,
+    });
+    if (response.message === 'success') {
+        return true;
+    }
+};
+
+/**
+ * getPaperListByCode
+ * @param {*} data
+ * @returns
+ */
+export const getPaperListByCode = async (data) => {
+    const response = await request({
+        url: '/user/paperlist',
+        method: 'POST',
+        data,
+    });
+    if (response.data) {
+        return response.data;
+    }
+};
+
+/**
+ * getPaperListByCode
+ * @param {*} data
+ * @returns
+ */
+export const apiStudentAnswer = async (data) => {
+    const response = await request({
+        url: '/student/answer',
+        method: 'POST',
+        data,
+    });
+    if (response.message === 'success') {
+        return true;
+    }
+};

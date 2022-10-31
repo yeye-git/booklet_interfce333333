@@ -20,7 +20,17 @@ const Teacher_student_HomePage = ({ navigation, setSelectedTab }) => {
     const [joinCode, setJoinCode] = useState('');
 
     const handleModalConfirm = () => {
+        if (!joinCode) {
+            Alert.alert('Please enter your join code!');
+
+            return;
+        }
+
         handleModalCancel();
+
+        setTimeout(() => {
+            navigation.push('StudentDemo', { code: joinCode });
+        }, 1000);
     };
 
     const handleModalCancel = () => {

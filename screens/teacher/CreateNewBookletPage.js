@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { View, Alert, Text, Keyboard, TouchableWithoutFeedback, DeviceEventEmitter } from 'react-native';
+import { View, Alert, Text, Keyboard, TouchableHighlight, DeviceEventEmitter, StyleSheet } from 'react-native';
 import Swipeout from 'react-native-swipeout';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {
@@ -231,6 +231,10 @@ const CreateNewBookletPage = (props) => {
         props.navigation.goBack();
     };
 
+    const handleToSubjectPage = () => {
+        props.navigation.push('Subject', { pid });
+    };
+
     const handleModalConfirm = () => {
         const nextQuestionList = [...questionList];
 
@@ -291,90 +295,91 @@ const CreateNewBookletPage = (props) => {
     const handleToHomePage = () => {};
 
     return (
-        <BookletContentPane>
-            <BookletModalWrap
-                open={modalOpen}
-                animationType="slide"
-                transparent={true}
-                onOk={handleModalConfirm}
-                onCancel={handleModalCancel}
-            >
-                {currentModal}
-            </BookletModalWrap>
-            <BookletPaddingBar />
-            <BookletHomeBar>
-                <BookletHomeIconCont>
-                    <BookletHomeIconContBTN onPress={handleToHomePage}>
-                        <SBIcon
-                            resizeMode="cover"
-                            source={require('./../../assets/icons/48px/Outline/General/Home.png')}
-                        />
-                    </BookletHomeIconContBTN>
-                </BookletHomeIconCont>
+        <View style={styles.wrap}>
+            <BookletContentPane>
+                <BookletModalWrap
+                    open={modalOpen}
+                    animationType="slide"
+                    transparent={true}
+                    onOk={handleModalConfirm}
+                    onCancel={handleModalCancel}
+                >
+                    {currentModal}
+                </BookletModalWrap>
+                <BookletPaddingBar />
+                <BookletHomeBar>
+                    <BookletHomeIconCont>
+                        <BookletHomeIconContBTN onPress={handleToHomePage}>
+                            <SBIcon
+                                resizeMode="cover"
+                                source={require('./../../assets/icons/48px/Outline/General/Home.png')}
+                            />
+                        </BookletHomeIconContBTN>
+                    </BookletHomeIconCont>
 
-                <BookletHeadingTextInput
-                    onChangeText={(text) => {
-                        setHeading(text);
-                    }}
-                    value={heading}
-                    placeholder="Enter Booklet Heading"
-                    keyboardType="default"
-                />
-            </BookletHomeBar>
-            <BookletMainBar>
-                {status !== '2' ? (
-                    <BookletIconBar>
-                        {tabs.map((item) => (
-                            <SBButtonCont key={item.key} onPress={() => handleTabPress(item)}>
-                                <SBIcon resizeMode="cover" source={item.icon} />
-                            </SBButtonCont>
+                    <BookletHeadingTextInput
+                        onChangeText={(text) => {
+                            setHeading(text);
+                        }}
+                        value={heading}
+                        placeholder="Enter Booklet Heading"
+                        keyboardType="default"
+                    />
+                </BookletHomeBar>
+                <BookletMainBar>
+                    {status !== '2' ? (
+                        <BookletIconBar>
+                            {tabs.map((item) => (
+                                <SBButtonCont key={item.key} onPress={() => handleTabPress(item)}>
+                                    <SBIcon resizeMode="cover" source={item.icon} />
+                                </SBButtonCont>
+                            ))}
+                        </BookletIconBar>
+                    ) : null}
+                    <ScrollablePane style={{ padding: 10 }}>
+                        {currentDueDate && (
+                            <DateContentPane>
+                                <DateSub>Due: {currentDueDate}</DateSub>
+                            </DateContentPane>
+                        )}
+                        {questionList.map((item, index) => (
+                            // <QuestionContentPane
+                            //     style={{ backgroundColor: isActive ? '#a88df2' : '#CBBBF7' }}
+                            //     key={item.key}
+                            //     activeOpacity={0.5}
+                            //     onLongPress={() => {
+                            //         // selected = listkey;
+                            //         setIsActive(!isActive);
+                            //     }}
+                            // >
+                            //     {renderQuestion(item)}
+                            // </QuestionContentPane>
+                            <Swipeout
+                                key={index}
+                                backgroundColor="#fff"
+                                right={[
+                                    {
+                                        text: 'Delete',
+                                        type: 'delete',
+                                        onPress: () => {
+                                            handleDeleteItem(index);
+                                        },
+                                    },
+                                    {
+                                        text: 'Edit',
+                                        type: 'secondary',
+                                        onPress: () => {
+                                            handleEditItem(item, index);
+                                        },
+                                    },
+                                ]}
+                            >
+                                <QuestionCard data={item} />
+                            </Swipeout>
                         ))}
-                    </BookletIconBar>
-                ) : null}
-                <ScrollablePane style={{ padding: 10 }}>
-                    {currentDueDate && (
-                        <DateContentPane>
-                            <DateSub>Due: {currentDueDate}</DateSub>
-                        </DateContentPane>
-                    )}
-                    {questionList.map((item, index) => (
-                        // <QuestionContentPane
-                        //     style={{ backgroundColor: isActive ? '#a88df2' : '#CBBBF7' }}
-                        //     key={item.key}
-                        //     activeOpacity={0.5}
-                        //     onLongPress={() => {
-                        //         // selected = listkey;
-                        //         setIsActive(!isActive);
-                        //     }}
-                        // >
-                        //     {renderQuestion(item)}
-                        // </QuestionContentPane>
-                        <Swipeout
-                            key={index}
-                            backgroundColor="#fff"
-                            right={[
-                                {
-                                    text: 'Delete',
-                                    type: 'delete',
-                                    onPress: () => {
-                                        handleDeleteItem(index);
-                                    },
-                                },
-                                {
-                                    text: 'Edit',
-                                    type: 'secondary',
-                                    onPress: () => {
-                                        handleEditItem(item, index);
-                                    },
-                                },
-                            ]}
-                        >
-                            <QuestionCard data={item} />
-                        </Swipeout>
-                    ))}
-                </ScrollablePane>
-            </BookletMainBar>
-
+                    </ScrollablePane>
+                </BookletMainBar>
+            </BookletContentPane>
             <View>
                 <DateTimePickerModal
                     isVisible={dateVisible}
@@ -384,8 +389,42 @@ const CreateNewBookletPage = (props) => {
                     onCancel={() => {}}
                 />
             </View>
-        </BookletContentPane>
+            {status === '2' ? (
+                <TouchableHighlight style={styles.publishWrap} onPress={handleToSubjectPage}>
+                    <View style={styles.publishBtn}>
+                        <Text style={styles.btnText}>Publish</Text>
+                    </View>
+                </TouchableHighlight>
+            ) : null}
+        </View>
     );
 };
 
 export default CreateNewBookletPage;
+
+const styles = StyleSheet.create({
+    wrap: {
+        width: '100%',
+        paddingBottom: 100,
+        height: '100%',
+    },
+    publishWrap: {
+        width: '100%',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        marginHorizontal: 'auto',
+        height: 90,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    publishBtn: {
+        padding: 10,
+        backgroundColor: '#EAE1FA',
+        borderRadius: 10,
+    },
+    btnText: {
+        fontSize: 30,
+    },
+});

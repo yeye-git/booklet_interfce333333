@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Searchbar } from 'react-native-paper';
-import { getClassListBySid, apiCreateClass, apiDeleteClass } from '~/common-file/apis';
+import { getClassListBySid, apiCreateClass, apiDeleteClass, apiBindClass } from '~/common-file/apis';
 import { BookletModalWrap } from '~/components/BookletModalWrap';
 
 export const ClassFrame = (props) => {
-    const { sid = '' } = props.route?.params || {};
+    const { sid = '', pid } = props.route?.params || {};
 
     const [classList, setClassList] = useState([]);
     const [editable, setEditable] = useState(false);
     const [addVisible, setAddVisible] = useState(false);
     const [className, setClassName] = useState('');
+
+    const [selectedClass, setSelectClass] = useState({});
 
     useEffect(() => {
         handleSearchList();
@@ -60,6 +62,21 @@ export const ClassFrame = (props) => {
         setEditable(!editable);
     };
 
+    const handleBindPaper = async () => {
+        if (!selectedClass.cid) {
+            Alert.alert('Please select a class!');
+            return;
+        }
+        const result = await apiBindClass({
+            pid,
+            cid: [selectedClass.cid],
+        });
+
+        if (result) {
+            props.navigation.push('SendBooklet', { ...selectedClass });
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Image style={styles.icon} source={require('~/assets/Title2.png')} />
@@ -98,8 +115,21 @@ export const ClassFrame = (props) => {
                                 </View>
                             </TouchableOpacity>
                         )}
-                        <TouchableOpacity>
-                            <View style={styles.class}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (pid) {
+                                    setSelectClass(o);
+                                } else {
+                                    props.navigation.push('SendBooklet', { ...o });
+                                }
+                            }}
+                        >
+                            <View
+                                style={{
+                                    ...styles.class,
+                                    backgroundColor: selectedClass.cid === o.cid ? '#5141B6' : '#ECE5FF',
+                                }}
+                            >
                                 <Text style={styles.classText}>{o.className}</Text>
                             </View>
                         </TouchableOpacity>
@@ -134,6 +164,14 @@ export const ClassFrame = (props) => {
                     />
                 </View>
             </BookletModalWrap>
+
+            {pid ? (
+                <TouchableOpacity style={styles.publishWrap} onPress={handleBindPaper}>
+                    <View style={styles.publishBtn}>
+                        <Text style={styles.btnText}>Publish</Text>
+                    </View>
+                </TouchableOpacity>
+            ) : null}
         </View>
     );
 };
@@ -249,5 +287,24 @@ const styles = StyleSheet.create({
         maxHeight: 60,
         width: '100%',
         alignItems: 'center',
+    },
+    publishWrap: {
+        width: '100%',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        marginHorizontal: 'auto',
+        height: 90,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    publishBtn: {
+        padding: 10,
+        backgroundColor: '#EAE1FA',
+        borderRadius: 10,
+    },
+    btnText: {
+        fontSize: 30,
     },
 });

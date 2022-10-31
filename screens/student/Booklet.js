@@ -6,6 +6,10 @@ import {
     BookletHomeBar,
     BookletMainBar,
     BookletPaddingBar,
+    BookshelfIcon,
+    BookshelfImage,
+    BSButtonSubText,
+    BSIconCont,
     QuestionContentPane,
     ScrollablePane,
     SBIcon,
@@ -13,21 +17,28 @@ import {
     BookletHeadingTextInput,
     BookletHomeIconContBTN,
     StudentBookletHeading,
+    CompletedBookletsScroll,
+    HorizontalCont,
 } from '../../components/styles';
+
 import Utils from '../../utils/utils';
-import { questions } from '../teacher/CreateNewBookletPage';
-var duedate = null;
+import { getPaperListByCode } from '~/common-file/apis/index';
+
 const DemoBooklet = (props) => {
+    const { code } = props.route?.params || {};
+    const [data, setData] = useState([]);
+
     React.useEffect(() => {
-        const questionInfo = Utils.currentQuestion;
-        console.log('useEffect --Utils.currentQuestion:', Utils.currentQuestion);
-        if (!questionInfo) {
-            return;
-        }
-        onChangeHeading(questionInfo.title || '');
-        console.log('----detail', Utils.questionId);
+        getQuestion();
     }, []);
 
+    const getQuestion = async () => {
+        const result = await getPaperListByCode({ code });
+        setData(result);
+        console.log('🚀 ~ file: Booklet.js ~ line 29 ~ getQuestion ~ result', result);
+    };
+
+    const handleToCreatePage = () => {};
     return (
         <BookletContentPane>
             <BookletPaddingBar></BookletPaddingBar>
@@ -35,7 +46,7 @@ const DemoBooklet = (props) => {
                 <BookletHomeIconCont>
                     <BookletHomeIconContBTN
                         onPress={() => {
-                            homeScreen;
+                            // homeScreen;
                         }}
                     >
                         <SBIcon
@@ -47,20 +58,25 @@ const DemoBooklet = (props) => {
 
                 <StudentBookletHeading>Sample Text</StudentBookletHeading>
             </BookletHomeBar>
-            <BookletMainBar>
-                <ScrollablePane>
-                    {duedate}
-                    {!Utils.currentQuestion && questions.map((arr, listkey) => <View key={listkey}>{arr}</View>)}
-                    {Utils.currentQuestion && Utils.currentQuestion.id && (
-                        <QuestionContentPane
-                            style={{ backgroundColor: isActive ? '#a88df2' : '#CBBBF7' }}
-                            activeOpacity={0.5}
-                        >
-                            <View>{scrollSR(Utils.currentQuestion.questions, Utils.currentQuestion.answer)}</View>
-                        </QuestionContentPane>
-                    )}
-                </ScrollablePane>
-            </BookletMainBar>
+            <CompletedBookletsScroll>
+                <HorizontalCont>
+                    {/* {isinFocus} */}
+                    {(data || []).map((item, index) => {
+                        return (
+                            <BSIconCont key={item.pid}>
+                                <BookshelfIcon
+                                    onPress={() => {
+                                        handleToCreatePage(item);
+                                    }}
+                                >
+                                    <BookshelfImage source={require('~/assets/books.png')} />
+                                </BookshelfIcon>
+                                <BSButtonSubText>{item.papername}</BSButtonSubText>
+                            </BSIconCont>
+                        );
+                    })}
+                </HorizontalCont>
+            </CompletedBookletsScroll>
         </BookletContentPane>
     );
 };
